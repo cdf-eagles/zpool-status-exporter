@@ -142,14 +142,14 @@ func zfsPromMetrics(reg prometheus.Registerer) *promMetrics {
 			"pool", // ZFS Pool Name
 		}),
 		zpoolCapacity: promauto.With(reg).NewGaugeVec(prometheus.GaugeOpts{
-			Name: "zpool_capacity_bytes",
+			Name: "zpool_capacity_percent",
 			Help: "Capacity returns the value of the 'capacity' property as percentage.",
 		},
 		[]string {
 			"pool", // ZFS Pool Name
 		}),
 		zpoolFragmentation: promauto.With(reg).NewGaugeVec(prometheus.GaugeOpts{
-			Name: "zpool_fragmentation_bytes",
+			Name: "zpool_fragmentation_percent",
 			Help: "Fragmentation returns the value of the 'fragmentation' property as a percentage.",
 		},
 		[]string {
@@ -230,6 +230,7 @@ func recordPromMetrics(m *promMetrics) {
 		m.zpoolHealth.WithLabelValues(info.Name).Set(healthValue)
 		m.zpoolAllocated.WithLabelValues(info.Name).Set(float64(info.Allocated))
 		m.zpoolCapacity.WithLabelValues(info.Name).Set(float64(info.Capacity))
+		m.zpoolFragmentation.WithLabelValues(info.Name).Set(float64(info.Fragmentation))
 		m.zpoolFree.WithLabelValues(info.Name).Set(float64(info.Free))
 		m.zpoolFreeing.WithLabelValues(info.Name).Set(float64(info.Freeing))
 		m.zpoolLeaked.WithLabelValues(info.Name).Set(float64(info.Leaked))
