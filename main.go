@@ -1,8 +1,8 @@
 package main
 
 import (
-	"fmt"
 	"context"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -10,35 +10,51 @@ import (
 	"strconv"
 
 	"github.com/krystal/go-zfs"
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/collectors"
+	"github.com/prometheus/client_golang/prometheus/promauto"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
+
+type promMetrics struct {
+	zpoolHealth        *prometheus.GaugeVec
+	zpoolAllocated     *prometheus.GaugeVec
+	zpoolCapacity      *prometheus.GaugeVec
+	zpoolFragmentation *prometheus.GaugeVec
+	zpoolFree          *prometheus.GaugeVec
+	zpoolFreeing       *prometheus.GaugeVec
+	zpoolLeaked        *prometheus.GaugeVec
+	zpoolReadOnly      *prometheus.GaugeVec
+	zpoolSize          *prometheus.GaugeVec
+}
 
 // ZpoolInfo holds zpool status information
 // https://pkg.go.dev/github.com/krystal/go-zfs#Pool
 type ZpoolInfo struct {
-	Name			string
-	Allocated		uint64
-	Capacity		uint64
-	Fragmentation	uint64
-	Free			uint64
-	Freeing			uint64
-	Health			string
-	Leaked			uint64
-	ReadOnly		bool
-	Size			uint64
+	Name          string
+	Allocated     uint64
+	Capacity      uint64
+	Fragmentation uint64
+	Free          uint64
+	Freeing       uint64
+	Health        string
+	Leaked        uint64
+	ReadOnly      bool
+	Size          uint64
 }
 
 // convert booleans to integers for output
 // https://dev.to/chigbeef_77/bool-int-but-stupid-in-go-3jb3
 func Bool2int(b bool) int {
-    // The compiler currently only optimizes this form.
-    // See issue 6011.
-    var i int
-    if b {
-        i = 1
-    } else {
-        i = 0
-    }
-    return i
+	// The compiler currently only optimizes this form.
+	// See issue 6011.
+	var i int
+	if b {
+		i = 1
+	} else {
+		i = 0
+	}
+	return i
 }
 
 // collectZpoolMetrics gathers zpool status metrics
@@ -58,7 +74,7 @@ func collectZpoolMetrics() map[string]*ZpoolInfo {
 		info := &ZpoolInfo{
 			Name: pool.Name,
 		}
-		p, err := z.GetPool(ctx,pool.Name)
+		p, err := z.GetPool(ctx, pool.Name)
 		if err != nil {
 			log.Printf("Error retrieving pool %s: %v", pool.Name, err)
 			continue
@@ -66,39 +82,39 @@ func collectZpoolMetrics() map[string]*ZpoolInfo {
 
 		// Get pool stats
 		poolAllocated, present := p.Allocated()
-		if present == true {
+		if present {
 			info.Allocated = poolAllocated
 		}
 		poolCapacity, present := p.Capacity()
-		if present == true {
+		if present {
 			info.Capacity = poolCapacity
 		}
 		poolFragmentation, present := p.Fragmentation()
-		if present == true {
+		if present {
 			info.Fragmentation = poolFragmentation
 		}
 		poolFree, present := p.Free()
-		if present == true {
+		if present {
 			info.Free = poolFree
 		}
 		poolFreeing, present := p.Freeing()
-		if present == true {
+		if present {
 			info.Freeing = poolFreeing
 		}
 		poolHealth, present := p.Health()
-		if present == true {
+		if present {
 			info.Health = poolHealth
 		}
 		poolLeaked, present := p.Leaked()
-		if present == true {
+		if present {
 			info.Leaked = poolLeaked
 		}
 		poolReadOnly, present := p.ReadOnly()
-		if present == true {
+		if present {
 			info.ReadOnly = poolReadOnly
 		}
 		poolSize, present := p.Size()
-		if present == true {
+		if present {
 			info.Size = poolSize
 		}
 
@@ -108,18 +124,82 @@ func collectZpoolMetrics() map[string]*ZpoolInfo {
 	return metrics
 }
 
-// Handler for Prometheus scraping
-func prometheusHandler(w http.ResponseWriter, r *http.Request) {
-	metrics := collectZpoolMetrics()
-	if metrics == nil {
-		http.Error(w, "Error collecting metrics", http.StatusInternalServerError)
-		return
+// Create Prometheus Metrics Objects
+func zfsPromMetrics(reg prometheus.Registerer) *promMetrics {
+	m := &promMetrics{
+		zpoolHealth: promauto.With(reg).NewGaugeVec(prometheus.GaugeOpts{
+			Name: "zpool_health",
+			Help: "Health returns the value of the 'health' property.",
+		},
+		[]string {
+			"pool", // ZFS Pool Name
+		}),
+		zpoolAllocated: promauto.With(reg).NewGaugeVec(prometheus.GaugeOpts{
+			Name: "zpool_allocated_bytes",
+			Help: "Allocated returns the value of the 'allocated' property as number of bytes.",
+		},
+		[]string {
+			"pool", // ZFS Pool Name
+		}),
+		zpoolCapacity: promauto.With(reg).NewGaugeVec(prometheus.GaugeOpts{
+			Name: "zpool_capacity_bytes",
+			Help: "Capacity returns the value of the 'capacity' property as percentage.",
+		},
+		[]string {
+			"pool", // ZFS Pool Name
+		}),
+		zpoolFragmentation: promauto.With(reg).NewGaugeVec(prometheus.GaugeOpts{
+			Name: "zpool_fragmentation_bytes",
+			Help: "Fragmentation returns the value of the 'fragmentation' property as a percentage.",
+		},
+		[]string {
+			"pool", // ZFS Pool Name
+		}),
+		zpoolFree: promauto.With(reg).NewGaugeVec(prometheus.GaugeOpts{
+			Name: "zpool_free_bytes",
+			Help: "Free returns the value of the 'free' property as number of bytes.",
+		},
+		[]string {
+			"pool", // ZFS Pool Name
+		}),
+		zpoolFreeing: promauto.With(reg).NewGaugeVec(prometheus.GaugeOpts{
+			Name: "zpool_freeing_bytes",
+			Help: "Freeing returns the value of the 'freeing' property as number of bytes.",
+		},
+		[]string {
+			"pool", // ZFS Pool Name
+		}),
+		zpoolLeaked: promauto.With(reg).NewGaugeVec(prometheus.GaugeOpts{
+			Name: "zpool_leaked",
+			Help: "Leaked returns the value of the 'leaked' property as number of bytes.",
+		},
+		[]string {
+			"pool", // ZFS Pool Name
+		}),
+		zpoolReadOnly: promauto.With(reg).NewGaugeVec(prometheus.GaugeOpts{
+			Name: "zpool_readonly",
+			Help: "ReadOnly returns the value of the 'readonly' property as a boolean.",
+		},
+		[]string {
+			"pool", // ZFS Pool Name
+		}),
+		zpoolSize: promauto.With(reg).NewGaugeVec(prometheus.GaugeOpts{
+			Name: "zpool_size_bytes",
+			Help: "Size returns the value of the 'size' property as number of bytes.",
+		},
+		[]string {
+			"pool", // ZFS Pool Name
+		}),
 	}
+	return m
+}
 
-	// Generate Prometheus exposition format
-	var output string
-	for name, info := range metrics {
-		// Pool health metric
+// Record Prometheus Metrics
+func recordPromMetrics(m *promMetrics) {
+	metrics := collectZpoolMetrics()
+
+	for _, info := range metrics {
+		// Pool health metric (convert string to float64)
 		healthValue := 0.0
 		switch info.Health {
 		case "ONLINE":
@@ -137,54 +217,25 @@ func prometheusHandler(w http.ResponseWriter, r *http.Request) {
 		default:
 			healthValue = -1.0
 		}
-		output += fmt.Sprintf("# HELP zpool_health Health returns the value of the 'health' property.\n")
-		output += fmt.Sprintf("# TYPE zpool_health gauge\n")
-		output += fmt.Sprintf("zpool_health{pool=\"%s\"} %g\n", name, healthValue)
 
-		// Allocated metric
-		output += fmt.Sprintf("# HELP zpool_allocated_bytes Allocated returns the value of the 'allocated' property as number of bytes.\n")
-		output += fmt.Sprintf("# TYPE zpool_allocated_bytes gauge\n")
-		output += fmt.Sprintf("zpool_allocated_bytes{pool=\"%s\"} %g\n", name, float64(info.Allocated))
-		output += fmt.Sprintf("zpool_allocated_bytes{pool=\"%s\"} %g\n", name, float64(info.Allocated))
+		// Pool readOnly metric (convert boolean to float64)
+		readOnlyValue := 0.0
+		if info.ReadOnly {
+			readOnlyValue = 1.0
+		} else {
+			readOnlyValue = 0.0
+		}
 
-		// Capacity metric
-		output += fmt.Sprintf("# HELP zpool_capacity_bytes Capacity returns the value of the 'capacity' property as percentage.\n")
-		output += fmt.Sprintf("# TYPE zpool_capacity_bytes gauge\n")
-		output += fmt.Sprintf("zpool_capacity_percent{pool=\"%s\"} %g\n", name, float64(info.Capacity))
-
-		// Fragmentation metric
-		output += fmt.Sprintf("# HELP zpool_fragmentation_bytes Fragmentation returns the value of the 'fragmentation' property as a percentage.\n")
-		output += fmt.Sprintf("# TYPE zpool_fragmentation_bytes gauge\n")
-		output += fmt.Sprintf("zpool_fragmentation_percent{pool=\"%s\"} %g\n", name, float64(info.Fragmentation))
-
-		// Free space metric
-		output += fmt.Sprintf("# HELP zpool_free_bytes Free returns the value of the 'free' property as number of bytes.\n")
-		output += fmt.Sprintf("# TYPE zpool_free_bytes gauge\n")
-		output += fmt.Sprintf("zpool_free_bytes{pool=\"%s\"} %g\n", name, float64(info.Free))
-
-		// Freeing space metric
-		output += fmt.Sprintf("# HELP zpool_freeing_bytes Freeing returns the value of the 'freeing' property as number of bytes.\n")
-		output += fmt.Sprintf("# TYPE zpool_freeing_bytes gauge\n")
-		output += fmt.Sprintf("zpool_freeing_bytes{pool=\"%s\"} %g\n", name, float64(info.Freeing))
-
-		// Leaked space metric
-		output += fmt.Sprintf("# HELP zpool_leaked Leaked returns the value of the 'leaked' property as number of bytes.\n")
-		output += fmt.Sprintf("# TYPE zpool_leaked gauge\n")
-		output += fmt.Sprintf("zpool_leaked{pool=\"%s\"} %g\n", name, float64(info.Leaked))
-
-		// ReadOnly metric
-		output += fmt.Sprintf("# HELP zpool_readonly ReadOnly returns the value of the 'readonly' property as a boolean.\n")
-		output += fmt.Sprintf("# TYPE zpool_readonly gauge\n")
-		output += fmt.Sprintf("zpool_readonly{pool=\"%s\"} %d\n", name, Bool2int(info.ReadOnly))
-
-		// Size space metric
-		output += fmt.Sprintf("# HELP zpool_size_bytes Size returns the value of the 'size' property as number of bytes.\n")
-		output += fmt.Sprintf("# TYPE zpool_size_bytes gauge\n")
-		output += fmt.Sprintf("zpool_size_bytes{pool=\"%s\"} %g\n", name, float64(info.Size))
+		// Assign collected metrics to Prometheus objects
+		m.zpoolHealth.WithLabelValues(info.Name).Set(healthValue)
+		m.zpoolAllocated.WithLabelValues(info.Name).Set(float64(info.Allocated))
+		m.zpoolCapacity.WithLabelValues(info.Name).Set(float64(info.Capacity))
+		m.zpoolFree.WithLabelValues(info.Name).Set(float64(info.Free))
+		m.zpoolFreeing.WithLabelValues(info.Name).Set(float64(info.Freeing))
+		m.zpoolLeaked.WithLabelValues(info.Name).Set(float64(info.Leaked))
+		m.zpoolReadOnly.WithLabelValues(info.Name).Set(float64(readOnlyValue))
+		m.zpoolSize.WithLabelValues(info.Name).Set(float64(info.Size))
 	}
-
-	w.Header().Set("Content-Type", "text/plain; version=0.0.4")
-	w.Write([]byte(output))
 }
 
 // Main function
@@ -198,16 +249,27 @@ func main() {
 	fmt.Println("Starting ZPool Status Monitor...")
 	fmt.Printf("Go version: %s\n", runtime.Version())
 
+	// use Prometheus library to collect metrics
+	promReg := prometheus.NewRegistry()
+	// default Prometheus metrics for the exporter
+	promReg.MustRegister(
+		collectors.NewGoCollector(),
+		collectors.NewProcessCollector(collectors.ProcessCollectorOpts{}),
+	)
+	// ZPool metrics for the exporter
+	promMetrics := zfsPromMetrics(promReg)
+
 	// Start HTTP server
-	http.HandleFunc("/metrics", prometheusHandler)
+	http.Handle("/metrics", promhttp.HandlerFor(promReg, promhttp.HandlerOpts{}))
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		metrics := collectZpoolMetrics()
+		recordPromMetrics(promMetrics)
 
 		html := "<html><head><title>ZPool Status</title></head><body><h1>ZPool Status</h1>"
 
 		html += "<h2>Pools</h2><ul>\n"
 
-		gigaByte := float64(1024*1024*1024)
+		gigaByte := float64(1024 * 1024 * 1024)
 		for _, info := range metrics {
 			html += fmt.Sprintf("<p><li>Pool: %s", info.Name)
 			html += fmt.Sprintf("<br>  Health: %s", info.Health)
@@ -219,15 +281,18 @@ func main() {
 			html += fmt.Sprintf("<br>  Leaked: %d bytes (%.2f GB)", info.Leaked, float64(info.Leaked)/float64(gigaByte))
 			html += fmt.Sprintf("<br>  ReadOnly: %v", info.ReadOnly)
 			html += fmt.Sprintf("<br>  Size: %d bytes (%.2f GB)", info.Size, float64(info.Size)/float64(gigaByte))
-			html += fmt.Sprintf("</li></p>\n")
-			// html += fmt.Sprintf("\n")
+			html += "</li></p>\n"
 		}
 
 		html += "</ul></body></html>"
 		w.Header().Set("Content-Type", "text/html")
-		w.Write([]byte(html))
+		n, err := w.Write([]byte(html))
+		if err != nil {
+			log.Fatalf("Failed to write HTML data: response=%v err=%v", n, err)
+		}
 	})
 
+	// default port 62000 can be changed on the command line
 	port := "62000"
 	if len(os.Args) > 1 {
 		if portNum, err := strconv.Atoi(os.Args[1]); err == nil {
@@ -241,6 +306,7 @@ func main() {
 	fmt.Printf("HTML status at: %s/\n", addr)
 
 	if err := http.ListenAndServe(addr, nil); err != nil {
-		log.Fatal("Server error:", err)
+		log.Fatalf("Server error: %v", err)
+		os.Exit(1)
 	}
 }
