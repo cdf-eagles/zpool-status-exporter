@@ -1,0 +1,97 @@
+name: release
+
+on:
+  pull_request:
+    types: [closed]
+    branches: ['main', 'develop']
+    paths:
+      - '**.go'
+  workflow_dispatch:
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+  REPO_OWNER: "cdf-eagles"
+  PROJECT_NAME: "zpool-status-exporter"
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    env:
+      GOOS: "freebsd"
+      GOARCH: "amd64"
+      CGO_ENABLED: 0
+
+    permissions:
+      contents: read
+      packages: write
+      attestations: write
+      id-token: write
+
+    steps:
+      - name: "Get Current Date/Time"
+        id: datetime
+        run: echo "::set-output name=datetime::$(date +'%Y-%m-%d %H:%M:%S')"
+
+      - name: "Checkout"
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        id: checkout
+
+      - name: "Set Up Go"
+        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
+        id: setup_go
+        with:
+          go-version: '1.26.x'
+
+      - name: "Perform Semantic Version Tagging"
+        uses: gandarez/semver-action@e4ad946cc2a1df2955cde270b9ee59bafaa08fa7
+        id: semver-tag
+        with:
+          branching_model: "trunk-based"
+          prefix: "v"
+          main_branch_name: "main"
+          develop_branch_name: "develop"
+          patch_regex: "^fix/.+"
+          minor_regex: "^feat/.+"
+          major_regex: "^major/.+"
+          build_regex: "^build/.+"
+          exclude_regex: "^ignore/.+"
+
+      - name: "Created Tag"
+        run: echo "tag ${{ steps.semver-tag.outputs.semver_tag }}"
+
+      - name: "Build Go Application"
+        id: build_app
+        run: |
+          echo "Building for ${GOOS}-${GOARCH}"
+          go build -o app/${PROJECT_NAME}-${GOOS}-${GOARCH} .
+
+      - name: "Build FreeBSD PKG"
+        uses: vmactions/freebsd-vm@77ed28d336d03fe19a3f4f7266c1d2c4714dd79d
+        id: build_freebsd_pkg
+        env:
+          SEMVER: "${{ steps.semver-tag.outputs.semver_tag }}"
+          DATETIME: "${{ steps.datetime.outputs.datetime }}"
+          REVISION: "${{ github.ref }}"
+          IMAGE_SRC: "${{ github.repositoryUrl }}"
+        with:
+          usesh: true
+          sync: nfs
+          cpu: 2
+          mem: 4096
+          prepare: |
+
+            run: |
+                pwd
+                ls -lah
+                whoami
+                env
+                freebsd-version
+                uname -a
+                pkg install -y pkg curl
+                pkg clean -y -a
+                export PATH="${PATH}:/usr/local/bin:/usr/local/sbin"
+                export PORT=62000
+                if [ ! -d "./dist" ]; then mkdir -p ./dist; fi
+                sha256 ./app/${PROJECT_NAME}-${GOOS}-${GOARCH}
+
