@@ -1,0 +1,17 @@
+{
+   "blockdevices": [
+      {"name":"/dev/sda", "pkname":null, "type":"disk", "model":"WDC WD80EFZZ-68BTXN0", "serial":"SERIALL001", "wwn":"0x5000000000000101",
+         "children": [
+            {"name":"/dev/sda1", "pkname":"/dev/sda", "type":"part", "model":null, "serial":null, "wwn":"0x5000000000000101"},
+            {"name":"/dev/sda9", "pkname":"/dev/sda", "type":"part", "model":null, "serial":null, "wwn":"0x5000000000000101"}
+         ]
+      },
+      {"name":"/dev/sdb", "pkname":null, "type":"disk", "model":"WDC WD80EFZZ-68BTXN0", "serial":"SERIALL002", "wwn":"0x5000000000000102",
+         "children": [
+            {"name":"/dev/sdb1", "pkname":"/dev/sdb", "type":"part", "model":null, "serial":null, "wwn":"0x5000000000000102"}
+         ]
+      },
+      {"name":"/dev/nvme0n1", "pkname":null, "type":"disk", "model":"Samsung SSD 990 PRO 2TB", "serial":"SERIALL003", "wwn":"eui.0000000000000001"},
+      {"name":"/dev/sr0", "pkname":null, "type":"rom", "model":"DVD-ROM", "serial":"SERIALL004", "wwn":null}
+   ]
+}

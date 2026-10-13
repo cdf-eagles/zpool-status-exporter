@@ -1,0 +1,71 @@
+---
+groups:
+  - name: zfs
+    rules:
+      - alert: ZfsPoolNotOnline
+        expr: zfs_pool_state{state="ONLINE"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "ZFS pool {{ $labels.pool }} on {{ $labels.instance }} is not ONLINE"
+
+      - alert: ZfsVdevErrors
+        expr: >-
+          (zfs_vdev_read_errors + zfs_vdev_write_errors + zfs_vdev_checksum_errors) > 0
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "vdev {{ $labels.vdev }} ({{ $labels.disk }}) in pool {{ $labels.pool }} has I/O or checksum errors"
+
+      - alert: ZfsPoolDataErrors
+        expr: zfs_pool_data_errors > 0
+        labels:
+          severity: critical
+        annotations:
+          summary: "ZFS pool {{ $labels.pool }} reports permanent data errors"
+
+      - alert: ZfsPoolNearlyFull
+        expr: zfs_pool_capacity_ratio > 0.85
+        for: 30m
+        labels:
+          severity: warning
+        annotations:
+          summary: "ZFS pool {{ $labels.pool }} is {{ $value | humanizePercentage }} full"
+
+      - alert: ZfsScrubOverdue
+        expr: >-
+          (time() - zfs_pool_scan_end_time_seconds > 35 * 86400
+            and on (instance, pool) zfs_pool_scan_state{function="SCRUB"} == 1)
+          or on (instance, pool)
+          (zfs_pool_state{state="ONLINE"} == 1
+            unless on (instance, pool) zfs_pool_scan_state{function="SCRUB", state="FINISHED"} == 1
+            unless on (instance, pool) zfs_pool_scan_state{state="SCANNING"} == 1)
+        for: 1h
+        labels:
+          severity: warning
+        annotations:
+          summary: "ZFS pool {{ $labels.pool }} has no completed scrub in the last 35 days"
+
+      - alert: SmartDiskFailing
+        expr: zfs_smart_healthy == 0 or zfs_smart_exit_status_bit{bit=~"3|4"} == 1
+        labels:
+          severity: critical
+        annotations:
+          summary: "SMART reports device {{ $labels.device }} on {{ $labels.instance }} as failing"
+
+      - alert: SmartErrorLogGrowing
+        expr: increase(zfs_smart_error_log_entries[1d]) > 0
+        labels:
+          severity: warning
+        annotations:
+          summary: "The SMART error log of {{ $labels.device }} gained entries in the last day"
+
+      - alert: ZfsExporterCollectorFailing
+        expr: zfs_exporter_collector_up == 0
+        for: 15m
+        labels:
+          severity: warning
+        annotations:
+          summary: "zpool-status-exporter collector {{ $labels.collector }} on {{ $labels.instance }} is failing"

@@ -1,0 +1,35 @@
+name: "zpool-status-exporter"
+origin: "sysutils/zpool-status-exporter"
+version: "%%VERSION%%"
+comment: "Prometheus exporter for ZFS"
+maintainer: "noreply@github.com"
+www: "https://github.com/cdf-eagles/zpool-status-exporter"
+abi: "FreeBSD:15:amd64"
+arch: "FreeBSD:15:amd64"
+prefix: "/usr/local"
+licenselogic: "single"
+licenses: ["BSD3CLAUSE"]
+categories: ["sysutils"]
+desc: <<EOD
+Prometheus exporter for ZFS. It reports pool and vdev state, capacity,
+errors, scrub and resilver progress, I/O rates and latencies, Adaptive
+Replacement Cache (ARC) and other kernel statistics, dataset space, and
+Self-Monitoring, Analysis and Reporting Technology (SMART) data.
+EOD
+messages: [
+  {
+    type: "install"
+    message: <<EOM
+To enable and start the exporter:
+
+  sysrc zpool_status_exporter_enable=YES
+  service zpool_status_exporter start
+
+The SMART collector needs smartctl from sysutils/smartmontools:
+
+  pkg install smartmontools
+
+Metrics are served on port 10058 at /metrics.
+EOM
+  }
+]

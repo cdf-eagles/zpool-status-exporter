@@ -1,0 +1,28 @@
+/dev/ses0 -d atacam # /dev/ses0, ATA device
+/dev/ada0 -d atacam # /dev/ada0, ATA device
+/dev/ada1 -d atacam # /dev/ada1, ATA device
+/dev/ada2 -d atacam # /dev/ada2, ATA device
+/dev/ada3 -d atacam # /dev/ada3, ATA device
+/dev/ses1 -d atacam # /dev/ses1, ATA device
+/dev/da5 -d sat # /dev/da5 [SAT], ATA device
+/dev/da4 -d sat # /dev/da4 [SAT], ATA device
+/dev/da6 -d sat # /dev/da6 [SAT], ATA device
+/dev/da7 -d sat # /dev/da7 [SAT], ATA device
+/dev/da9 -d sat # /dev/da9 [SAT], ATA device
+/dev/da8 -d sat # /dev/da8 [SAT], ATA device
+/dev/da10 -d sat # /dev/da10 [SAT], ATA device
+/dev/da11 -d sat # /dev/da11 [SAT], ATA device
+/dev/da23 -d sat # /dev/da23 [SAT], ATA device
+/dev/da22 -d sat # /dev/da22 [SAT], ATA device
+/dev/da21 -d sat # /dev/da21 [SAT], ATA device
+/dev/da20 -d sat # /dev/da20 [SAT], ATA device
+/dev/da27 -d sat # /dev/da27 [SAT], ATA device
+/dev/da26 -d sat # /dev/da26 [SAT], ATA device
+/dev/da25 -d sat # /dev/da25 [SAT], ATA device
+/dev/da24 -d sat # /dev/da24 [SAT], ATA device
+/dev/da31 -d sat # /dev/da31 [SAT], ATA device
+/dev/da30 -d sat # /dev/da30 [SAT], ATA device
+/dev/da29 -d sat # /dev/da29 [SAT], ATA device
+/dev/da28 -d sat # /dev/da28 [SAT], ATA device
+# /dev/nda0 -d scsi # /dev/nda0, SCSI device open failed: INQUIRY failed
+/dev/nvme0 -d nvme # /dev/nvme0, NVMe device

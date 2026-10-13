@@ -1,0 +1,77 @@
+---
+name: CI
+
+# yamllint disable-line rule:truthy
+on:
+  pull_request:
+    branches: [develop, main]
+  push:
+    branches: [develop]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  GOLANGCI_LINT_VERSION: v2.14.0
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+
+      - name: Set up Go
+        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e  # v7.0.0
+        with:
+          go-version-file: go.mod
+
+      - name: Run golangci-lint for Linux
+        uses: golangci/golangci-lint-action@ba0d7d2ec06a0ea1cb5fa41b2e4a3ab91d21278a  # v9.3.0
+        with:
+          version: ${{ env.GOLANGCI_LINT_VERSION }}
+          install-mode: goinstall
+
+      - name: Run golangci-lint for FreeBSD
+        env:
+          GOOS: freebsd
+        run: golangci-lint run ./...
+
+      - name: Run shellcheck
+        run: shellcheck -s sh scripts/*.sh packaging/freebsd/build-pkg.sh packaging/freebsd/rc.d/zpool_status_exporter packaging/linux/*.sh
+
+  test:
+    name: Test and build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+
+      - name: Set up Go
+        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e  # v7.0.0
+        with:
+          go-version-file: go.mod
+
+      - name: Test with the race detector
+        run: go test -race -coverprofile=coverage.out ./...
+
+      - name: Require 90 percent coverage
+        run: |
+          total=$(go tool cover -func=coverage.out | awk '/^total:/ {sub("%", "", $3); print $3}')
+          echo "Total coverage: ${total}%"
+          awk -v t="$total" 'BEGIN { exit (t >= 90) ? 0 : 1 }'
+
+      - name: Run govulncheck
+        run: go run golang.org/x/vuln/cmd/govulncheck@latest ./...
+
+      - name: Build for FreeBSD and Linux
+        run: |
+          for os in freebsd linux; do
+            CGO_ENABLED=0 GOOS="$os" GOARCH=amd64 go build -trimpath -o /dev/null ./cmd/zpool-status-exporter
+          done
