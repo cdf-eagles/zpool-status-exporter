@@ -1,5 +1,8 @@
 # Changelog
 
+- 2026-10-14
+  - `scripts/next-version.sh` prints the command that fast-forwards `main` without a release when only `ignore/` pull requests were merged since the last release.
+
 - 2026-10-13
   - `scripts/next-version.sh` now reads squash-merged pull requests: it takes the pull request number from each commit subject and looks up its branch prefix with the GitHub CLI (gh).
   - Rewrote the exporter: pool, virtual device (vdev), scan, I/O rate and latency, Adaptive Replacement Cache (ARC), kernel statistic, dataset, and Self-Monitoring, Analysis and Reporting Technology (SMART) metrics under the `zfs_` namespace. Every earlier metric name is replaced.

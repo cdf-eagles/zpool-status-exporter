@@ -65,3 +65,8 @@ repository and are not repeated here.
   request merge), then push a signed `vX.Y.Z` tag on the same commit. The
   release workflow republishes the release candidate's files after checking
   their checksums and attestations.
+- `ignore/`-only promotion: when every pull request since the last release
+  came from an `ignore/` branch, `main` may be fast-forwarded to `develop`
+  without a tag; `next-version.sh` detects this and prints the command. Any
+  other branch type since the last release (including `build/` and
+  `dependabot/`) blocks it until a release.

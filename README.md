@@ -209,6 +209,13 @@ Work is squash merged into `develop` through pull requests from `fix/`,
    candidate's own files, checked against their checksums, with build
    provenance attestations.
 
+When every pull request merged since the last release came from an `ignore/`
+branch (documentation, examples, repository housekeeping), nothing that is
+packaged has changed: `scripts/next-version.sh` says so and prints the command
+that fast-forwards `main` to `develop` without a tag or release. A `build/` or
+`dependabot/` pull request can change what is built, so it waits for the next
+release.
+
 See `CHANGELOG.md` for changes.
 
 ## License
