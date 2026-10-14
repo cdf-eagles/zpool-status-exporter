@@ -5,7 +5,9 @@
 #
 # Each pull request's branch prefix decides the bump: major/ bumps the major
 # version, feat/ the minor version, fix/ the patch version; build/, ignore/,
-# dependabot/, and other branches do not bump. Pull requests are squash
+# dependabot/, and other branches do not bump. When every pull request since
+# the last release came from an ignore/ branch, it prints the command that
+# fast-forwards main without a tag instead (exit 0). Pull requests are squash
 # merged, so the branch is looked up with the GitHub CLI (gh) from the
 # "(#N)" at the end of each commit subject. "Merge pull request #N from
 # owner/branch" subjects are read directly.
@@ -54,7 +56,24 @@ for b in $branches; do
 	esac
 done
 
+sha=$(git rev-parse "$ref")
+
 if [ "$bump" = none ]; then
+	# Only ignore/ pull requests: nothing that is packaged changed, so main may
+	# be fast-forwarded without a release. Any other non-bumping branch
+	# (build/, dependabot/) can change what is built and waits for a release.
+	merged=$(printf '%s\n' "$branches" | sed '/^$/d')
+	others=$(printf '%s\n' "$merged" | grep -v '^ignore/' || true)
+	if [ -n "$merged" ] && [ -z "$others" ]; then
+		echo "Last release:     ${last:-none}"
+		echo "Merged branches:  $(echo "$merged" | tr '\n' ' ')"
+		echo "Bump:             none (ignore/ only)"
+		echo
+		echo "Nothing to release. main may be fast-forwarded without a tag:"
+		echo "  git switch main && git merge --ff-only ${sha}"
+		echo "  git push origin main"
+		exit 0
+	fi
 	echo "next-version: no fix/, feat/, or major/ pull request merged since ${last:-the first commit}" >&2
 	exit 1
 fi
@@ -73,7 +92,6 @@ rc=1
 while git rev-parse --verify --quiet "refs/tags/${next}-rc.${rc}" > /dev/null; do
 	rc=$((rc + 1))
 done
-sha=$(git rev-parse "$ref")
 
 echo "Last release:     ${last:-none}"
 echo "Merged branches:  $(echo "$branches" | tr '\n' ' ')"
