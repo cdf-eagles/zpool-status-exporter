@@ -80,6 +80,8 @@ vdevs, I/O, ARC, SMART, datasets, and collector health) to import with
 Grafana's dashboard import, choosing a Prometheus data source. Neither file
 is installed by the packages.
 
+![The example Grafana dashboard: pool health, capacity, fragmentation, scrub age, and pool I/O](docs/images/grafana-dashboard.png)
+
 ## Metrics
 
 <!-- metrics-table:start -->
