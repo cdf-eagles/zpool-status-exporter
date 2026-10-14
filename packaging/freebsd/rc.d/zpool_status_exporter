@@ -30,10 +30,13 @@ PATH="${PATH}:/sbin:/usr/sbin:/usr/local/sbin:/usr/local/bin"
 export PATH
 
 # daemon(8) restarts the exporter when it exits; stopping the service signals
-# the supervisor, which ends the child as well.
+# the supervisor, which ends the child as well. -f detaches it from the
+# caller's standard input, output, and error (otherwise `service ... restart`
+# over SSH never returns, because the supervisor keeps the session open); -S
+# still sends the exporter's output to syslog.
 pidfile="/var/run/${name}_supervisor.pid"
 child_pidfile="/var/run/${name}.pid"
 command="/usr/sbin/daemon"
-command_args="-r -S -T ${name} -P ${pidfile} -p ${child_pidfile} -u ${zpool_status_exporter_user} /usr/local/bin/zpool-status-exporter --web.listen-address=${zpool_status_exporter_listen_address} ${zpool_status_exporter_args}"
+command_args="-f -r -S -T ${name} -P ${pidfile} -p ${child_pidfile} -u ${zpool_status_exporter_user} /usr/local/bin/zpool-status-exporter --web.listen-address=${zpool_status_exporter_listen_address} ${zpool_status_exporter_args}"
 
 run_rc_command "$1"

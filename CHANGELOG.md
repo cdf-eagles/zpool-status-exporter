@@ -3,6 +3,7 @@
 - 2026-10-14
   - `scripts/next-version.sh` prints the command that fast-forwards `main` without a release when only `ignore/` pull requests were merged since the last release.
   - Fixed the pool collector reporting a failure on a host with no ZFS pools: OpenZFS 2.4 prints nothing for `zpool list -j` there, which now counts as no pools. Empty `zpool list` output while `zpool status` reports pools is still an error.
+  - Fixed the FreeBSD rc.d script leaving `service zpool_status_exporter start` or `restart` attached to the caller's terminal: daemon(8) now runs with `-f`, so the command returns over SSH. The exporter's output still goes to syslog.
 
 - 2026-10-13
   - `scripts/next-version.sh` now reads squash-merged pull requests: it takes the pull request number from each commit subject and looks up its branch prefix with the GitHub CLI (gh).
