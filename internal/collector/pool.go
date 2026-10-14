@@ -1,6 +1,7 @@
 package collector
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -137,8 +138,14 @@ func parseStatus(data []byte) (statusOutput, error) {
 	return out, nil
 }
 
+// parseList parses zpool list -j. OpenZFS 2.4 prints nothing at all, with
+// exit status 0, when no pools are imported; that is an empty list.
 func parseList(data []byte) (listOutput, error) {
 	var out listOutput
+	if len(bytes.TrimSpace(data)) == 0 {
+		out.Pools = map[string]listPool{}
+		return out, nil
+	}
 	if err := json.Unmarshal(data, &out); err != nil {
 		return out, fmt.Errorf("parse zpool list JSON: %w", err)
 	}
@@ -342,6 +349,9 @@ func (j *poolJob) Collect(ctx context.Context) ([]prometheus.Metric, error) {
 	ls, err := parseList(res.Stdout)
 	if err != nil {
 		return nil, err
+	}
+	if len(ls.Pools) == 0 && len(st.Pools) > 0 {
+		return nil, fmt.Errorf("zpool list printed no pools, but zpool status reported %d", len(st.Pools))
 	}
 	devices := j.devices(ctx)
 	topo := buildTopology(st, devices)
