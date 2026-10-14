@@ -192,3 +192,24 @@ func TestFlattenPoolClasses(t *testing.T) {
 		}
 	}
 }
+
+// Output captured on a FreeBSD 15.1 guest with no pools (OpenZFS 2.4.2):
+// zpool status -j prints an empty "pools" object, and zpool list -j prints
+// nothing at all, both with exit status 0.
+func TestPoolCollectorNoPools(t *testing.T) {
+	f := freebsdFake(t)
+	f.Set(cmdStatus, runner.Response{Stdout: fixture(t, "freebsd/no-pools/zpool-status.json")})
+	f.Set(cmdList, runner.Response{Stdout: fixture(t, "freebsd/no-pools/zpool-list.json")})
+	got := collect(t, newPoolJob(f))
+	absent(t, got, "zfs_pool_")
+	absent(t, got, "zfs_vdev_")
+}
+
+func TestPoolCollectorEmptyListWithPools(t *testing.T) {
+	f := freebsdFake(t)
+	f.Set(cmdList, runner.Response{Stdout: ""})
+	_, err := newPoolJob(f).Collect(context.Background())
+	if err == nil || !strings.Contains(err.Error(), "zpool list printed no pools") {
+		t.Fatalf("err = %v, want an error naming the empty zpool list output", err)
+	}
+}
