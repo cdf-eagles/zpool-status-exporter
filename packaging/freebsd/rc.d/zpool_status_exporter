@@ -1,0 +1,39 @@
+#!/bin/sh
+# shellcheck disable=SC2034,SC1091
+# rc.subr(8) reads the variables set below after sourcing this file.
+
+# PROVIDE: zpool_status_exporter
+# REQUIRE: LOGIN zfs
+# KEYWORD: shutdown
+
+# Configuration variables for /etc/rc.conf:
+#
+# zpool_status_exporter_enable (bool):          Set to YES to enable the service. Default: NO
+# zpool_status_exporter_listen_address (str):   Address and port to listen on. Default: ":10058"
+# zpool_status_exporter_args (str):             Additional command-line arguments. Default: ""
+# zpool_status_exporter_user (str):             User to run as. Default: root
+
+. /etc/rc.subr
+
+name="zpool_status_exporter"
+rcvar="zpool_status_exporter_enable"
+desc="Prometheus exporter for ZFS"
+
+load_rc_config "${name}"
+
+: "${zpool_status_exporter_enable:=NO}"
+: "${zpool_status_exporter_listen_address:=:10058}"
+: "${zpool_status_exporter_args:=}"
+: "${zpool_status_exporter_user:=root}"
+
+PATH="${PATH}:/sbin:/usr/sbin:/usr/local/sbin:/usr/local/bin"
+export PATH
+
+# daemon(8) restarts the exporter when it exits; stopping the service signals
+# the supervisor, which ends the child as well.
+pidfile="/var/run/${name}_supervisor.pid"
+child_pidfile="/var/run/${name}.pid"
+command="/usr/sbin/daemon"
+command_args="-r -S -T ${name} -P ${pidfile} -p ${child_pidfile} -u ${zpool_status_exporter_user} /usr/local/bin/zpool-status-exporter --web.listen-address=${zpool_status_exporter_listen_address} ${zpool_status_exporter_args}"
+
+run_rc_command "$1"

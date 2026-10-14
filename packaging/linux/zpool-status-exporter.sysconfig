@@ -1,0 +1,2 @@
+# Command-line arguments for zpool-status-exporter; see zpool-status-exporter(8).
+ZPOOL_STATUS_EXPORTER_ARGS="--web.listen-address=:10058"

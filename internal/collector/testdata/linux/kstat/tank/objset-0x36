@@ -1,0 +1,9 @@
+71 1 0x01 7 2160 4239289042 1053463651934
+name                            type data
+dataset_name                    7    tank/home
+writes                          4    1200
+nwritten                        4    52428800
+reads                           4    3400
+nread                           4    104857600
+nunlinks                        4    15
+nunlinked                       4    15

@@ -1,0 +1,3104 @@
+{
+ "output_version": {
+  "command": "zpool list",
+  "vers_major": 0,
+  "vers_minor": 1
+ },
+ "pools": {
+  "datapool": {
+   "name": "datapool",
+   "type": "POOL",
+   "state": "ONLINE",
+   "pool_guid": 1000,
+   "txg": 23600167,
+   "spa_version": 5000,
+   "zpl_version": 5,
+   "properties": {
+    "size": {
+     "value": 1992864825344,
+     "source": {
+      "type": "NONE",
+      "data": "-"
+     }
+    },
+    "allocated": {
+     "value": 705586925568,
+     "source": {
+      "type": "NONE",
+      "data": "-"
+     }
+    },
+    "free": {
+     "value": 1287277899776,
+     "source": {
+      "type": "NONE",
+      "data": "-"
+     }
+    },
+    "checkpoint": {
+     "value": "-",
+     "source": {
+      "type": "NONE",
+      "data": "-"
+     }
+    },
+    "expandsize": {
+     "value": "-",
+     "source": {
+      "type": "NONE",
+      "data": "-"
+     }
+    },
+    "fragmentation": {
+     "value": 67,
+     "source": {
+      "type": "NONE",
+      "data": "-"
+     }
+    },
+    "capacity": {
+     "value": 35,
+     "source": {
+      "type": "NONE",
+      "data": "-"
+     }
+    },
+    "dedupratio": {
+     "value": "1.00",
+     "source": {
+      "type": "NONE",
+      "data": "-"
+     }
+    },
+    "health": {
+     "value": "ONLINE",
+     "source": {
+      "type": "NONE",
+      "data": "-"
+     }
+    },
+    "altroot": {
+     "value": "-",
+     "source": {
+      "type": "DEFAULT",
+      "data": "-"
+     }
+    }
+   },
+   "vdevs": {
+    "mirror-0": {
+     "name": "mirror-0",
+     "vdev_type": "mirror",
+     "guid": 1001,
+     "class": "normal",
+     "state": "ONLINE",
+     "properties": {
+      "size": {
+       "value": 1992864825344,
+       "source": {
+        "type": "NONE",
+        "data": "-"
+       }
+      },
+      "allocated": {
+       "value": 705586925568,
+       "source": {
+        "type": "NONE",
+        "data": "-"
+       }
+      },
+      "free": {
+       "value": 1287277899776,
+       "source": {
+        "type": "NONE",
+        "data": "-"
+       }
+      },
+      "checkpoint": {
+       "value": "-",
+       "source": {
+        "type": "NONE",
+        "data": "-"
+       }
+      },
+      "expandsize": {
+       "value": "-",
+       "source": {
+        "type": "NONE",
+        "data": "-"
+       }
+      },
+      "fragmentation": {
+       "value": 67,
+       "source": {
+        "type": "NONE",
+        "data": "-"
+       }
+      },
+      "capacity": {
+       "value": 35,
+       "source": {
+        "type": "NONE",
+        "data": "-"
+       }
+      },
+      "dedupratio": {
+       "value": "-",
+       "source": {
+        "type": "NONE",
+        "data": "-"
+       }
+      },
+      "health": {
+       "value": "ONLINE",
+       "source": {
+        "type": "NONE",
+        "data": "-"
+       }
+      },
+      "altroot": {
+       "value": "-",
+       "source": {
+        "type": "NONE",
+        "data": "-"
+       }
+      }
+     },
+     "vdevs": {
+      "gpt/chassis02": {
+       "name": "gpt/chassis02",
+       "vdev_type": "disk",
+       "guid": 1002,
+       "path": "/dev/gpt/chassis02",
+       "phys_path": "id1,enc@n0000000000000000/type@0/slot@3/elmdesc@Slot_02/p1",
+       "class": "normal",
+       "state": "ONLINE",
+       "properties": {
+        "size": {
+         "value": 2000293986304,
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "allocated": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "free": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "checkpoint": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "expandsize": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "fragmentation": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "capacity": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "dedupratio": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "health": {
+         "value": "ONLINE",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "altroot": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        }
+       }
+      },
+      "gpt/chassis03": {
+       "name": "gpt/chassis03",
+       "vdev_type": "disk",
+       "guid": 1003,
+       "path": "/dev/gpt/chassis03",
+       "phys_path": "id1,enc@n0000000000000000/type@0/slot@4/elmdesc@Slot_03/p1",
+       "class": "normal",
+       "state": "ONLINE",
+       "properties": {
+        "size": {
+         "value": 2000293986304,
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "allocated": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "free": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "checkpoint": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "expandsize": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "fragmentation": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "capacity": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "dedupratio": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "health": {
+         "value": "ONLINE",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "altroot": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        }
+       }
+      }
+     }
+    },
+    "logs": {
+     "mirror-1": {
+      "name": "mirror-1",
+      "vdev_type": "mirror",
+      "guid": 1004,
+      "class": "log",
+      "state": "ONLINE",
+      "properties": {
+       "size": {
+        "value": 119185342464,
+        "source": {
+         "type": "NONE",
+         "data": "-"
+        }
+       },
+       "allocated": {
+        "value": 71782400,
+        "source": {
+         "type": "NONE",
+         "data": "-"
+        }
+       },
+       "free": {
+        "value": 119113560064,
+        "source": {
+         "type": "NONE",
+         "data": "-"
+        }
+       },
+       "checkpoint": {
+        "value": "-",
+        "source": {
+         "type": "NONE",
+         "data": "-"
+        }
+       },
+       "expandsize": {
+        "value": 129922760704,
+        "source": {
+         "type": "NONE",
+         "data": "-"
+        }
+       },
+       "fragmentation": {
+        "value": 0,
+        "source": {
+         "type": "NONE",
+         "data": "-"
+        }
+       },
+       "capacity": {
+        "value": 0,
+        "source": {
+         "type": "NONE",
+         "data": "-"
+        }
+       },
+       "dedupratio": {
+        "value": "-",
+        "source": {
+         "type": "NONE",
+         "data": "-"
+        }
+       },
+       "health": {
+        "value": "ONLINE",
+        "source": {
+         "type": "NONE",
+         "data": "-"
+        }
+       },
+       "altroot": {
+        "value": "-",
+        "source": {
+         "type": "NONE",
+         "data": "-"
+        }
+       }
+      },
+      "vdevs": {
+       "gpt/chassis10": {
+        "name": "gpt/chassis10",
+        "vdev_type": "disk",
+        "guid": 1005,
+        "path": "/dev/gpt/chassis10",
+        "phys_path": "id1,enc@n0000000000000000/type@0/slot@d/p1",
+        "class": "log",
+        "state": "ONLINE",
+        "properties": {
+         "size": {
+          "value": 249953255424,
+          "source": {
+           "type": "NONE",
+           "data": "-"
+          }
+         },
+         "allocated": {
+          "value": "-",
+          "source": {
+           "type": "NONE",
+           "data": "-"
+          }
+         },
+         "free": {
+          "value": "-",
+          "source": {
+           "type": "NONE",
+           "data": "-"
+          }
+         },
+         "checkpoint": {
+          "value": "-",
+          "source": {
+           "type": "NONE",
+           "data": "-"
+          }
+         },
+         "expandsize": {
+          "value": "-",
+          "source": {
+           "type": "NONE",
+           "data": "-"
+          }
+         },
+         "fragmentation": {
+          "value": "-",
+          "source": {
+           "type": "NONE",
+           "data": "-"
+          }
+         },
+         "capacity": {
+          "value": "-",
+          "source": {
+           "type": "NONE",
+           "data": "-"
+          }
+         },
+         "dedupratio": {
+          "value": "-",
+          "source": {
+           "type": "NONE",
+           "data": "-"
+          }
+         },
+         "health": {
+          "value": "ONLINE",
+          "source": {
+           "type": "NONE",
+           "data": "-"
+          }
+         },
+         "altroot": {
+          "value": "-",
+          "source": {
+           "type": "NONE",
+           "data": "-"
+          }
+         }
+        }
+       },
+       "gpt/chassis11": {
+        "name": "gpt/chassis11",
+        "vdev_type": "disk",
+        "guid": 1006,
+        "path": "/dev/gpt/chassis11",
+        "phys_path": "id1,enc@n0000000000000000/type@0/slot@f/p1",
+        "class": "log",
+        "state": "ONLINE",
+        "properties": {
+         "size": {
+          "value": 249953255424,
+          "source": {
+           "type": "NONE",
+           "data": "-"
+          }
+         },
+         "allocated": {
+          "value": "-",
+          "source": {
+           "type": "NONE",
+           "data": "-"
+          }
+         },
+         "free": {
+          "value": "-",
+          "source": {
+           "type": "NONE",
+           "data": "-"
+          }
+         },
+         "checkpoint": {
+          "value": "-",
+          "source": {
+           "type": "NONE",
+           "data": "-"
+          }
+         },
+         "expandsize": {
+          "value": "-",
+          "source": {
+           "type": "NONE",
+           "data": "-"
+          }
+         },
+         "fragmentation": {
+          "value": "-",
+          "source": {
+           "type": "NONE",
+           "data": "-"
+          }
+         },
+         "capacity": {
+          "value": "-",
+          "source": {
+           "type": "NONE",
+           "data": "-"
+          }
+         },
+         "dedupratio": {
+          "value": "-",
+          "source": {
+           "type": "NONE",
+           "data": "-"
+          }
+         },
+         "health": {
+          "value": "ONLINE",
+          "source": {
+           "type": "NONE",
+           "data": "-"
+          }
+         },
+         "altroot": {
+          "value": "-",
+          "source": {
+           "type": "NONE",
+           "data": "-"
+          }
+         }
+        }
+       }
+      }
+     }
+    },
+    "l2cache": {
+     "gpt/chassis07": {
+      "name": "gpt/chassis07",
+      "vdev_type": "disk",
+      "guid": 1007,
+      "path": "/dev/gpt/chassis07",
+      "phys_path": "id1,enc@n0000000000000000/type@0/slot@10/p1",
+      "class": "l2cache",
+      "state": "ONLINE",
+      "properties": {
+       "size": {
+        "value": 249953255424,
+        "source": {
+         "type": "NONE",
+         "data": "-"
+        }
+       },
+       "allocated": {
+        "value": 35281162240,
+        "source": {
+         "type": "NONE",
+         "data": "-"
+        }
+       },
+       "free": {
+        "value": 214667370496,
+        "source": {
+         "type": "NONE",
+         "data": "-"
+        }
+       },
+       "checkpoint": {
+        "value": "-",
+        "source": {
+         "type": "NONE",
+         "data": "-"
+        }
+       },
+       "expandsize": {
+        "value": "-",
+        "source": {
+         "type": "NONE",
+         "data": "-"
+        }
+       },
+       "fragmentation": {
+        "value": 0,
+        "source": {
+         "type": "NONE",
+         "data": "-"
+        }
+       },
+       "capacity": {
+        "value": 14,
+        "source": {
+         "type": "NONE",
+         "data": "-"
+        }
+       },
+       "dedupratio": {
+        "value": "-",
+        "source": {
+         "type": "NONE",
+         "data": "-"
+        }
+       },
+       "health": {
+        "value": "ONLINE",
+        "source": {
+         "type": "NONE",
+         "data": "-"
+        }
+       },
+       "altroot": {
+        "value": "-",
+        "source": {
+         "type": "NONE",
+         "data": "-"
+        }
+       }
+      }
+     },
+     "gpt/chassis06": {
+      "name": "gpt/chassis06",
+      "vdev_type": "disk",
+      "guid": 1008,
+      "path": "/dev/gpt/chassis06",
+      "phys_path": "id1,enc@n0000000000000000/type@0/slot@e/p1",
+      "class": "l2cache",
+      "state": "ONLINE",
+      "properties": {
+       "size": {
+        "value": 249953255424,
+        "source": {
+         "type": "NONE",
+         "data": "-"
+        }
+       },
+       "allocated": {
+        "value": 35050233856,
+        "source": {
+         "type": "NONE",
+         "data": "-"
+        }
+       },
+       "free": {
+        "value": 214898298880,
+        "source": {
+         "type": "NONE",
+         "data": "-"
+        }
+       },
+       "checkpoint": {
+        "value": "-",
+        "source": {
+         "type": "NONE",
+         "data": "-"
+        }
+       },
+       "expandsize": {
+        "value": "-",
+        "source": {
+         "type": "NONE",
+         "data": "-"
+        }
+       },
+       "fragmentation": {
+        "value": 0,
+        "source": {
+         "type": "NONE",
+         "data": "-"
+        }
+       },
+       "capacity": {
+        "value": 14,
+        "source": {
+         "type": "NONE",
+         "data": "-"
+        }
+       },
+       "dedupratio": {
+        "value": "-",
+        "source": {
+         "type": "NONE",
+         "data": "-"
+        }
+       },
+       "health": {
+        "value": "ONLINE",
+        "source": {
+         "type": "NONE",
+         "data": "-"
+        }
+       },
+       "altroot": {
+        "value": "-",
+        "source": {
+         "type": "NONE",
+         "data": "-"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "mediapool": {
+   "name": "mediapool",
+   "type": "POOL",
+   "state": "ONLINE",
+   "pool_guid": 1009,
+   "txg": 101182623,
+   "spa_version": 5000,
+   "zpl_version": 5,
+   "properties": {
+    "size": {
+     "value": 96018288869376,
+     "source": {
+      "type": "NONE",
+      "data": "-"
+     }
+    },
+    "allocated": {
+     "value": 65903420451840,
+     "source": {
+      "type": "NONE",
+      "data": "-"
+     }
+    },
+    "free": {
+     "value": 30114868417536,
+     "source": {
+      "type": "NONE",
+      "data": "-"
+     }
+    },
+    "checkpoint": {
+     "value": "-",
+     "source": {
+      "type": "NONE",
+      "data": "-"
+     }
+    },
+    "expandsize": {
+     "value": "-",
+     "source": {
+      "type": "NONE",
+      "data": "-"
+     }
+    },
+    "fragmentation": {
+     "value": 21,
+     "source": {
+      "type": "NONE",
+      "data": "-"
+     }
+    },
+    "capacity": {
+     "value": 68,
+     "source": {
+      "type": "NONE",
+      "data": "-"
+     }
+    },
+    "dedupratio": {
+     "value": "1.00",
+     "source": {
+      "type": "NONE",
+      "data": "-"
+     }
+    },
+    "health": {
+     "value": "ONLINE",
+     "source": {
+      "type": "NONE",
+      "data": "-"
+     }
+    },
+    "altroot": {
+     "value": "-",
+     "source": {
+      "type": "DEFAULT",
+      "data": "-"
+     }
+    }
+   },
+   "vdevs": {
+    "raidz2-0": {
+     "name": "raidz2-0",
+     "vdev_type": "raidz",
+     "guid": 1010,
+     "class": "normal",
+     "state": "ONLINE",
+     "properties": {
+      "size": {
+       "value": 96018288869376,
+       "source": {
+        "type": "NONE",
+        "data": "-"
+       }
+      },
+      "allocated": {
+       "value": 65903420451840,
+       "source": {
+        "type": "NONE",
+        "data": "-"
+       }
+      },
+      "free": {
+       "value": 30114868417536,
+       "source": {
+        "type": "NONE",
+        "data": "-"
+       }
+      },
+      "checkpoint": {
+       "value": "-",
+       "source": {
+        "type": "NONE",
+        "data": "-"
+       }
+      },
+      "expandsize": {
+       "value": "-",
+       "source": {
+        "type": "NONE",
+        "data": "-"
+       }
+      },
+      "fragmentation": {
+       "value": 21,
+       "source": {
+        "type": "NONE",
+        "data": "-"
+       }
+      },
+      "capacity": {
+       "value": 68,
+       "source": {
+        "type": "NONE",
+        "data": "-"
+       }
+      },
+      "dedupratio": {
+       "value": "-",
+       "source": {
+        "type": "NONE",
+        "data": "-"
+       }
+      },
+      "health": {
+       "value": "ONLINE",
+       "source": {
+        "type": "NONE",
+        "data": "-"
+       }
+      },
+      "altroot": {
+       "value": "-",
+       "source": {
+        "type": "NONE",
+        "data": "-"
+       }
+      }
+     },
+     "vdevs": {
+      "gpt/a0d08": {
+       "name": "gpt/a0d08",
+       "vdev_type": "disk",
+       "guid": 1011,
+       "path": "/dev/gpt/a0d08",
+       "phys_path": "id1,enc@n0000000000000000/type@0/slot@4/p1",
+       "class": "normal",
+       "state": "ONLINE",
+       "properties": {
+        "size": {
+         "value": 8001559724032,
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "allocated": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "free": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "checkpoint": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "expandsize": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "fragmentation": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "capacity": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "dedupratio": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "health": {
+         "value": "ONLINE",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "altroot": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        }
+       }
+      },
+      "gpt/a0d03": {
+       "name": "gpt/a0d03",
+       "vdev_type": "disk",
+       "guid": 1012,
+       "path": "/dev/gpt/a0d03",
+       "phys_path": "id1,enc@n0000000000000000/type@0/slot@a/p1",
+       "class": "normal",
+       "state": "ONLINE",
+       "properties": {
+        "size": {
+         "value": 8001562869760,
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "allocated": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "free": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "checkpoint": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "expandsize": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "fragmentation": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "capacity": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "dedupratio": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "health": {
+         "value": "ONLINE",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "altroot": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        }
+       }
+      },
+      "gpt/a0d04": {
+       "name": "gpt/a0d04",
+       "vdev_type": "disk",
+       "guid": 1013,
+       "path": "/dev/gpt/a0d04",
+       "phys_path": "id1,enc@n0000000000000000/type@0/slot@8/p1",
+       "class": "normal",
+       "state": "ONLINE",
+       "properties": {
+        "size": {
+         "value": 8001562869760,
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "allocated": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "free": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "checkpoint": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "expandsize": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "fragmentation": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "capacity": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "dedupratio": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "health": {
+         "value": "ONLINE",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "altroot": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        }
+       }
+      },
+      "gpt/a0d09": {
+       "name": "gpt/a0d09",
+       "vdev_type": "disk",
+       "guid": 1014,
+       "path": "/dev/gpt/a0d09",
+       "phys_path": "id1,enc@n0000000000000000/type@0/slot@3/p1",
+       "class": "normal",
+       "state": "ONLINE",
+       "properties": {
+        "size": {
+         "value": 8001559724032,
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "allocated": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "free": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "checkpoint": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "expandsize": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "fragmentation": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "capacity": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "dedupratio": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "health": {
+         "value": "ONLINE",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "altroot": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        }
+       }
+      },
+      "gpt/a0d02": {
+       "name": "gpt/a0d02",
+       "vdev_type": "disk",
+       "guid": 1015,
+       "path": "/dev/gpt/a0d02",
+       "phys_path": "id1,enc@n0000000000000000/type@0/slot@9/p1",
+       "class": "normal",
+       "state": "ONLINE",
+       "properties": {
+        "size": {
+         "value": 8001562869760,
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "allocated": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "free": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "checkpoint": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "expandsize": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "fragmentation": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "capacity": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "dedupratio": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "health": {
+         "value": "ONLINE",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "altroot": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        }
+       }
+      },
+      "gpt/a0d05": {
+       "name": "gpt/a0d05",
+       "vdev_type": "disk",
+       "guid": 1016,
+       "path": "/dev/gpt/a0d05",
+       "phys_path": "id1,enc@n0000000000000000/type@0/slot@7/p1",
+       "class": "normal",
+       "state": "ONLINE",
+       "properties": {
+        "size": {
+         "value": 8001562869760,
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "allocated": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "free": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "checkpoint": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "expandsize": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "fragmentation": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "capacity": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "dedupratio": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "health": {
+         "value": "ONLINE",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "altroot": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        }
+       }
+      },
+      "gpt/a0d07": {
+       "name": "gpt/a0d07",
+       "vdev_type": "disk",
+       "guid": 1017,
+       "path": "/dev/gpt/a0d07",
+       "phys_path": "id1,enc@n0000000000000000/type@0/slot@6/p1",
+       "class": "normal",
+       "state": "ONLINE",
+       "properties": {
+        "size": {
+         "value": 8001559724032,
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "allocated": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "free": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "checkpoint": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "expandsize": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "fragmentation": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "capacity": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "dedupratio": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "health": {
+         "value": "ONLINE",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "altroot": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        }
+       }
+      },
+      "gpt/a0d01": {
+       "name": "gpt/a0d01",
+       "vdev_type": "disk",
+       "guid": 1018,
+       "path": "/dev/gpt/a0d01",
+       "phys_path": "id1,enc@n0000000000000000/type@0/slot@b/p1",
+       "class": "normal",
+       "state": "ONLINE",
+       "properties": {
+        "size": {
+         "value": 8001562869760,
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "allocated": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "free": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "checkpoint": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "expandsize": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "fragmentation": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "capacity": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "dedupratio": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "health": {
+         "value": "ONLINE",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "altroot": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        }
+       }
+      },
+      "gpt/a0d00": {
+       "name": "gpt/a0d00",
+       "vdev_type": "disk",
+       "guid": 1019,
+       "path": "/dev/gpt/a0d00",
+       "phys_path": "id1,enc@n0000000000000000/type@0/slot@c/p1",
+       "class": "normal",
+       "state": "ONLINE",
+       "properties": {
+        "size": {
+         "value": 8001562869760,
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "allocated": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "free": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "checkpoint": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "expandsize": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "fragmentation": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "capacity": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "dedupratio": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "health": {
+         "value": "ONLINE",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "altroot": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        }
+       }
+      },
+      "gpt/a0d06": {
+       "name": "gpt/a0d06",
+       "vdev_type": "disk",
+       "guid": 1020,
+       "path": "/dev/gpt/a0d06",
+       "phys_path": "id1,enc@n0000000000000000/type@0/slot@5/p1",
+       "class": "normal",
+       "state": "ONLINE",
+       "properties": {
+        "size": {
+         "value": 8001559724032,
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "allocated": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "free": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "checkpoint": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "expandsize": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "fragmentation": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "capacity": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "dedupratio": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "health": {
+         "value": "ONLINE",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "altroot": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        }
+       }
+      },
+      "gpt/a0d10": {
+       "name": "gpt/a0d10",
+       "vdev_type": "disk",
+       "guid": 1021,
+       "path": "/dev/gpt/a0d10",
+       "phys_path": "id1,enc@n0000000000000000/type@0/slot@1/p1",
+       "class": "normal",
+       "state": "ONLINE",
+       "properties": {
+        "size": {
+         "value": 8001563131904,
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "allocated": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "free": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "checkpoint": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "expandsize": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "fragmentation": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "capacity": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "dedupratio": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "health": {
+         "value": "ONLINE",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "altroot": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        }
+       }
+      },
+      "gpt/a0d11": {
+       "name": "gpt/a0d11",
+       "vdev_type": "disk",
+       "guid": 1022,
+       "path": "/dev/gpt/a0d11",
+       "phys_path": "id1,enc@n0000000000000000/type@0/slot@2/p1",
+       "class": "normal",
+       "state": "ONLINE",
+       "properties": {
+        "size": {
+         "value": 8001563131904,
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "allocated": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "free": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "checkpoint": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "expandsize": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "fragmentation": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "capacity": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "dedupratio": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "health": {
+         "value": "ONLINE",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "altroot": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        }
+       }
+      }
+     }
+    },
+    "logs": {
+     "mirror-3": {
+      "name": "mirror-3",
+      "vdev_type": "mirror",
+      "guid": 1023,
+      "class": "log",
+      "state": "ONLINE",
+      "properties": {
+       "size": {
+        "value": 249108103168,
+        "source": {
+         "type": "NONE",
+         "data": "-"
+        }
+       },
+       "allocated": {
+        "value": 372736,
+        "source": {
+         "type": "NONE",
+         "data": "-"
+        }
+       },
+       "free": {
+        "value": 249107730432,
+        "source": {
+         "type": "NONE",
+         "data": "-"
+        }
+       },
+       "checkpoint": {
+        "value": "-",
+        "source": {
+         "type": "NONE",
+         "data": "-"
+        }
+       },
+       "expandsize": {
+        "value": "-",
+        "source": {
+         "type": "NONE",
+         "data": "-"
+        }
+       },
+       "fragmentation": {
+        "value": 0,
+        "source": {
+         "type": "NONE",
+         "data": "-"
+        }
+       },
+       "capacity": {
+        "value": 0,
+        "source": {
+         "type": "NONE",
+         "data": "-"
+        }
+       },
+       "dedupratio": {
+        "value": "-",
+        "source": {
+         "type": "NONE",
+         "data": "-"
+        }
+       },
+       "health": {
+        "value": "ONLINE",
+        "source": {
+         "type": "NONE",
+         "data": "-"
+        }
+       },
+       "altroot": {
+        "value": "-",
+        "source": {
+         "type": "NONE",
+         "data": "-"
+        }
+       }
+      },
+      "vdevs": {
+       "gpt/chassis08": {
+        "name": "gpt/chassis08",
+        "vdev_type": "disk",
+        "guid": 1024,
+        "path": "/dev/gpt/chassis08",
+        "phys_path": "id1,enc@n0000000000000000/type@0/slot@b/p1",
+        "class": "log",
+        "state": "ONLINE",
+        "properties": {
+         "size": {
+          "value": 249953255424,
+          "source": {
+           "type": "NONE",
+           "data": "-"
+          }
+         },
+         "allocated": {
+          "value": "-",
+          "source": {
+           "type": "NONE",
+           "data": "-"
+          }
+         },
+         "free": {
+          "value": "-",
+          "source": {
+           "type": "NONE",
+           "data": "-"
+          }
+         },
+         "checkpoint": {
+          "value": "-",
+          "source": {
+           "type": "NONE",
+           "data": "-"
+          }
+         },
+         "expandsize": {
+          "value": "-",
+          "source": {
+           "type": "NONE",
+           "data": "-"
+          }
+         },
+         "fragmentation": {
+          "value": "-",
+          "source": {
+           "type": "NONE",
+           "data": "-"
+          }
+         },
+         "capacity": {
+          "value": "-",
+          "source": {
+           "type": "NONE",
+           "data": "-"
+          }
+         },
+         "dedupratio": {
+          "value": "-",
+          "source": {
+           "type": "NONE",
+           "data": "-"
+          }
+         },
+         "health": {
+          "value": "ONLINE",
+          "source": {
+           "type": "NONE",
+           "data": "-"
+          }
+         },
+         "altroot": {
+          "value": "-",
+          "source": {
+           "type": "NONE",
+           "data": "-"
+          }
+         }
+        }
+       },
+       "gpt/chassis09": {
+        "name": "gpt/chassis09",
+        "vdev_type": "disk",
+        "guid": 1025,
+        "path": "/dev/gpt/chassis09",
+        "phys_path": "id1,enc@n0000000000000000/type@0/slot@9/p1",
+        "class": "log",
+        "state": "ONLINE",
+        "properties": {
+         "size": {
+          "value": 249953255424,
+          "source": {
+           "type": "NONE",
+           "data": "-"
+          }
+         },
+         "allocated": {
+          "value": "-",
+          "source": {
+           "type": "NONE",
+           "data": "-"
+          }
+         },
+         "free": {
+          "value": "-",
+          "source": {
+           "type": "NONE",
+           "data": "-"
+          }
+         },
+         "checkpoint": {
+          "value": "-",
+          "source": {
+           "type": "NONE",
+           "data": "-"
+          }
+         },
+         "expandsize": {
+          "value": "-",
+          "source": {
+           "type": "NONE",
+           "data": "-"
+          }
+         },
+         "fragmentation": {
+          "value": "-",
+          "source": {
+           "type": "NONE",
+           "data": "-"
+          }
+         },
+         "capacity": {
+          "value": "-",
+          "source": {
+           "type": "NONE",
+           "data": "-"
+          }
+         },
+         "dedupratio": {
+          "value": "-",
+          "source": {
+           "type": "NONE",
+           "data": "-"
+          }
+         },
+         "health": {
+          "value": "ONLINE",
+          "source": {
+           "type": "NONE",
+           "data": "-"
+          }
+         },
+         "altroot": {
+          "value": "-",
+          "source": {
+           "type": "NONE",
+           "data": "-"
+          }
+         }
+        }
+       }
+      }
+     }
+    },
+    "l2cache": {
+     "gpt/chassis04": {
+      "name": "gpt/chassis04",
+      "vdev_type": "disk",
+      "guid": 1026,
+      "path": "/dev/gpt/chassis04",
+      "phys_path": "id1,enc@n0000000000000000/type@0/slot@c/p1",
+      "class": "l2cache",
+      "state": "ONLINE",
+      "properties": {
+       "size": {
+        "value": 500001669120,
+        "source": {
+         "type": "NONE",
+         "data": "-"
+        }
+       },
+       "allocated": {
+        "value": 446720536576,
+        "source": {
+         "type": "NONE",
+         "data": "-"
+        }
+       },
+       "free": {
+        "value": 53276409856,
+        "source": {
+         "type": "NONE",
+         "data": "-"
+        }
+       },
+       "checkpoint": {
+        "value": "-",
+        "source": {
+         "type": "NONE",
+         "data": "-"
+        }
+       },
+       "expandsize": {
+        "value": "-",
+        "source": {
+         "type": "NONE",
+         "data": "-"
+        }
+       },
+       "fragmentation": {
+        "value": 0,
+        "source": {
+         "type": "NONE",
+         "data": "-"
+        }
+       },
+       "capacity": {
+        "value": 89,
+        "source": {
+         "type": "NONE",
+         "data": "-"
+        }
+       },
+       "dedupratio": {
+        "value": "-",
+        "source": {
+         "type": "NONE",
+         "data": "-"
+        }
+       },
+       "health": {
+        "value": "ONLINE",
+        "source": {
+         "type": "NONE",
+         "data": "-"
+        }
+       },
+       "altroot": {
+        "value": "-",
+        "source": {
+         "type": "NONE",
+         "data": "-"
+        }
+       }
+      }
+     },
+     "gpt/chassis05": {
+      "name": "gpt/chassis05",
+      "vdev_type": "disk",
+      "guid": 1027,
+      "path": "/dev/gpt/chassis05",
+      "phys_path": "id1,enc@n0000000000000000/type@0/slot@a/p1",
+      "class": "l2cache",
+      "state": "ONLINE",
+      "properties": {
+       "size": {
+        "value": 500001669120,
+        "source": {
+         "type": "NONE",
+         "data": "-"
+        }
+       },
+       "allocated": {
+        "value": 447755755520,
+        "source": {
+         "type": "NONE",
+         "data": "-"
+        }
+       },
+       "free": {
+        "value": 52241190912,
+        "source": {
+         "type": "NONE",
+         "data": "-"
+        }
+       },
+       "checkpoint": {
+        "value": "-",
+        "source": {
+         "type": "NONE",
+         "data": "-"
+        }
+       },
+       "expandsize": {
+        "value": "-",
+        "source": {
+         "type": "NONE",
+         "data": "-"
+        }
+       },
+       "fragmentation": {
+        "value": 0,
+        "source": {
+         "type": "NONE",
+         "data": "-"
+        }
+       },
+       "capacity": {
+        "value": 89,
+        "source": {
+         "type": "NONE",
+         "data": "-"
+        }
+       },
+       "dedupratio": {
+        "value": "-",
+        "source": {
+         "type": "NONE",
+         "data": "-"
+        }
+       },
+       "health": {
+        "value": "ONLINE",
+        "source": {
+         "type": "NONE",
+         "data": "-"
+        }
+       },
+       "altroot": {
+        "value": "-",
+        "source": {
+         "type": "NONE",
+         "data": "-"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "nvme-podman02-transcode": {
+   "name": "nvme-podman02-transcode",
+   "type": "POOL",
+   "state": "ONLINE",
+   "pool_guid": 1028,
+   "txg": 447064,
+   "spa_version": 5000,
+   "zpl_version": 5,
+   "properties": {
+    "size": {
+     "value": 532575944704,
+     "source": {
+      "type": "NONE",
+      "data": "-"
+     }
+    },
+    "allocated": {
+     "value": 11470278656,
+     "source": {
+      "type": "NONE",
+      "data": "-"
+     }
+    },
+    "free": {
+     "value": 521105666048,
+     "source": {
+      "type": "NONE",
+      "data": "-"
+     }
+    },
+    "checkpoint": {
+     "value": "-",
+     "source": {
+      "type": "NONE",
+      "data": "-"
+     }
+    },
+    "expandsize": {
+     "value": "-",
+     "source": {
+      "type": "NONE",
+      "data": "-"
+     }
+    },
+    "fragmentation": {
+     "value": 31,
+     "source": {
+      "type": "NONE",
+      "data": "-"
+     }
+    },
+    "capacity": {
+     "value": 2,
+     "source": {
+      "type": "NONE",
+      "data": "-"
+     }
+    },
+    "dedupratio": {
+     "value": "1.00",
+     "source": {
+      "type": "NONE",
+      "data": "-"
+     }
+    },
+    "health": {
+     "value": "ONLINE",
+     "source": {
+      "type": "NONE",
+      "data": "-"
+     }
+    },
+    "altroot": {
+     "value": "-",
+     "source": {
+      "type": "DEFAULT",
+      "data": "-"
+     }
+    }
+   },
+   "vdevs": {
+    "gpt/nvme-podman02-transcode": {
+     "name": "gpt/nvme-podman02-transcode",
+     "vdev_type": "disk",
+     "guid": 1029,
+     "path": "/dev/gpt/nvme-podman02-transcode",
+     "class": "normal",
+     "state": "ONLINE",
+     "properties": {
+      "size": {
+       "value": 536870912000,
+       "source": {
+        "type": "NONE",
+        "data": "-"
+       }
+      },
+      "allocated": {
+       "value": 11470278656,
+       "source": {
+        "type": "NONE",
+        "data": "-"
+       }
+      },
+      "free": {
+       "value": 521105666048,
+       "source": {
+        "type": "NONE",
+        "data": "-"
+       }
+      },
+      "checkpoint": {
+       "value": "-",
+       "source": {
+        "type": "NONE",
+        "data": "-"
+       }
+      },
+      "expandsize": {
+       "value": "-",
+       "source": {
+        "type": "NONE",
+        "data": "-"
+       }
+      },
+      "fragmentation": {
+       "value": 31,
+       "source": {
+        "type": "NONE",
+        "data": "-"
+       }
+      },
+      "capacity": {
+       "value": 2,
+       "source": {
+        "type": "NONE",
+        "data": "-"
+       }
+      },
+      "dedupratio": {
+       "value": "-",
+       "source": {
+        "type": "NONE",
+        "data": "-"
+       }
+      },
+      "health": {
+       "value": "ONLINE",
+       "source": {
+        "type": "NONE",
+        "data": "-"
+       }
+      },
+      "altroot": {
+       "value": "-",
+       "source": {
+        "type": "NONE",
+        "data": "-"
+       }
+      }
+     }
+    }
+   }
+  },
+  "nvme-podman03": {
+   "name": "nvme-podman03",
+   "type": "POOL",
+   "state": "ONLINE",
+   "pool_guid": 1030,
+   "txg": 443419,
+   "spa_version": 5000,
+   "zpl_version": 5,
+   "properties": {
+    "size": {
+     "value": 532575944704,
+     "source": {
+      "type": "NONE",
+      "data": "-"
+     }
+    },
+    "allocated": {
+     "value": 13627392,
+     "source": {
+      "type": "NONE",
+      "data": "-"
+     }
+    },
+    "free": {
+     "value": 532562317312,
+     "source": {
+      "type": "NONE",
+      "data": "-"
+     }
+    },
+    "checkpoint": {
+     "value": "-",
+     "source": {
+      "type": "NONE",
+      "data": "-"
+     }
+    },
+    "expandsize": {
+     "value": "-",
+     "source": {
+      "type": "NONE",
+      "data": "-"
+     }
+    },
+    "fragmentation": {
+     "value": 0,
+     "source": {
+      "type": "NONE",
+      "data": "-"
+     }
+    },
+    "capacity": {
+     "value": 0,
+     "source": {
+      "type": "NONE",
+      "data": "-"
+     }
+    },
+    "dedupratio": {
+     "value": "1.00",
+     "source": {
+      "type": "NONE",
+      "data": "-"
+     }
+    },
+    "health": {
+     "value": "ONLINE",
+     "source": {
+      "type": "NONE",
+      "data": "-"
+     }
+    },
+    "altroot": {
+     "value": "-",
+     "source": {
+      "type": "DEFAULT",
+      "data": "-"
+     }
+    }
+   },
+   "vdevs": {
+    "gpt/nvme-podman03": {
+     "name": "gpt/nvme-podman03",
+     "vdev_type": "disk",
+     "guid": 1031,
+     "path": "/dev/gpt/nvme-podman03",
+     "class": "normal",
+     "state": "ONLINE",
+     "properties": {
+      "size": {
+       "value": 536870912000,
+       "source": {
+        "type": "NONE",
+        "data": "-"
+       }
+      },
+      "allocated": {
+       "value": 13627392,
+       "source": {
+        "type": "NONE",
+        "data": "-"
+       }
+      },
+      "free": {
+       "value": 532562317312,
+       "source": {
+        "type": "NONE",
+        "data": "-"
+       }
+      },
+      "checkpoint": {
+       "value": "-",
+       "source": {
+        "type": "NONE",
+        "data": "-"
+       }
+      },
+      "expandsize": {
+       "value": "-",
+       "source": {
+        "type": "NONE",
+        "data": "-"
+       }
+      },
+      "fragmentation": {
+       "value": 0,
+       "source": {
+        "type": "NONE",
+        "data": "-"
+       }
+      },
+      "capacity": {
+       "value": 0,
+       "source": {
+        "type": "NONE",
+        "data": "-"
+       }
+      },
+      "dedupratio": {
+       "value": "-",
+       "source": {
+        "type": "NONE",
+        "data": "-"
+       }
+      },
+      "health": {
+       "value": "ONLINE",
+       "source": {
+        "type": "NONE",
+        "data": "-"
+       }
+      },
+      "altroot": {
+       "value": "-",
+       "source": {
+        "type": "NONE",
+        "data": "-"
+       }
+      }
+     }
+    }
+   }
+  },
+  "nvme-tunarr-transcode": {
+   "name": "nvme-tunarr-transcode",
+   "type": "POOL",
+   "state": "ONLINE",
+   "pool_guid": 1032,
+   "txg": 417594,
+   "spa_version": 5000,
+   "zpl_version": 5,
+   "properties": {
+    "size": {
+     "value": 68182605824,
+     "source": {
+      "type": "NONE",
+      "data": "-"
+     }
+    },
+    "allocated": {
+     "value": 389877760,
+     "source": {
+      "type": "NONE",
+      "data": "-"
+     }
+    },
+    "free": {
+     "value": 67792728064,
+     "source": {
+      "type": "NONE",
+      "data": "-"
+     }
+    },
+    "checkpoint": {
+     "value": "-",
+     "source": {
+      "type": "NONE",
+      "data": "-"
+     }
+    },
+    "expandsize": {
+     "value": "-",
+     "source": {
+      "type": "NONE",
+      "data": "-"
+     }
+    },
+    "fragmentation": {
+     "value": 2,
+     "source": {
+      "type": "NONE",
+      "data": "-"
+     }
+    },
+    "capacity": {
+     "value": 0,
+     "source": {
+      "type": "NONE",
+      "data": "-"
+     }
+    },
+    "dedupratio": {
+     "value": "1.00",
+     "source": {
+      "type": "NONE",
+      "data": "-"
+     }
+    },
+    "health": {
+     "value": "ONLINE",
+     "source": {
+      "type": "NONE",
+      "data": "-"
+     }
+    },
+    "altroot": {
+     "value": "-",
+     "source": {
+      "type": "DEFAULT",
+      "data": "-"
+     }
+    }
+   },
+   "vdevs": {
+    "gpt/nvme-tunarr-transcode": {
+     "name": "gpt/nvme-tunarr-transcode",
+     "vdev_type": "disk",
+     "guid": 1033,
+     "path": "/dev/gpt/nvme-tunarr-transcode",
+     "class": "normal",
+     "state": "ONLINE",
+     "properties": {
+      "size": {
+       "value": 68719476736,
+       "source": {
+        "type": "NONE",
+        "data": "-"
+       }
+      },
+      "allocated": {
+       "value": 389877760,
+       "source": {
+        "type": "NONE",
+        "data": "-"
+       }
+      },
+      "free": {
+       "value": 67792728064,
+       "source": {
+        "type": "NONE",
+        "data": "-"
+       }
+      },
+      "checkpoint": {
+       "value": "-",
+       "source": {
+        "type": "NONE",
+        "data": "-"
+       }
+      },
+      "expandsize": {
+       "value": "-",
+       "source": {
+        "type": "NONE",
+        "data": "-"
+       }
+      },
+      "fragmentation": {
+       "value": 2,
+       "source": {
+        "type": "NONE",
+        "data": "-"
+       }
+      },
+      "capacity": {
+       "value": 0,
+       "source": {
+        "type": "NONE",
+        "data": "-"
+       }
+      },
+      "dedupratio": {
+       "value": "-",
+       "source": {
+        "type": "NONE",
+        "data": "-"
+       }
+      },
+      "health": {
+       "value": "ONLINE",
+       "source": {
+        "type": "NONE",
+        "data": "-"
+       }
+      },
+      "altroot": {
+       "value": "-",
+       "source": {
+        "type": "NONE",
+        "data": "-"
+       }
+      }
+     }
+    }
+   }
+  },
+  "rpool": {
+   "name": "rpool",
+   "type": "POOL",
+   "state": "ONLINE",
+   "pool_guid": 1034,
+   "txg": 23999105,
+   "spa_version": 5000,
+   "zpl_version": 5,
+   "properties": {
+    "size": {
+     "value": 996432412672,
+     "source": {
+      "type": "NONE",
+      "data": "-"
+     }
+    },
+    "allocated": {
+     "value": 33930657792,
+     "source": {
+      "type": "NONE",
+      "data": "-"
+     }
+    },
+    "free": {
+     "value": 962501754880,
+     "source": {
+      "type": "NONE",
+      "data": "-"
+     }
+    },
+    "checkpoint": {
+     "value": "-",
+     "source": {
+      "type": "NONE",
+      "data": "-"
+     }
+    },
+    "expandsize": {
+     "value": "-",
+     "source": {
+      "type": "NONE",
+      "data": "-"
+     }
+    },
+    "fragmentation": {
+     "value": 18,
+     "source": {
+      "type": "NONE",
+      "data": "-"
+     }
+    },
+    "capacity": {
+     "value": 3,
+     "source": {
+      "type": "NONE",
+      "data": "-"
+     }
+    },
+    "dedupratio": {
+     "value": "1.00",
+     "source": {
+      "type": "NONE",
+      "data": "-"
+     }
+    },
+    "health": {
+     "value": "ONLINE",
+     "source": {
+      "type": "NONE",
+      "data": "-"
+     }
+    },
+    "altroot": {
+     "value": "-",
+     "source": {
+      "type": "DEFAULT",
+      "data": "-"
+     }
+    }
+   },
+   "vdevs": {
+    "mirror-0": {
+     "name": "mirror-0",
+     "vdev_type": "mirror",
+     "guid": 1035,
+     "class": "normal",
+     "state": "ONLINE",
+     "properties": {
+      "size": {
+       "value": 996432412672,
+       "source": {
+        "type": "NONE",
+        "data": "-"
+       }
+      },
+      "allocated": {
+       "value": 33930657792,
+       "source": {
+        "type": "NONE",
+        "data": "-"
+       }
+      },
+      "free": {
+       "value": 962501754880,
+       "source": {
+        "type": "NONE",
+        "data": "-"
+       }
+      },
+      "checkpoint": {
+       "value": "-",
+       "source": {
+        "type": "NONE",
+        "data": "-"
+       }
+      },
+      "expandsize": {
+       "value": "-",
+       "source": {
+        "type": "NONE",
+        "data": "-"
+       }
+      },
+      "fragmentation": {
+       "value": 18,
+       "source": {
+        "type": "NONE",
+        "data": "-"
+       }
+      },
+      "capacity": {
+       "value": 3,
+       "source": {
+        "type": "NONE",
+        "data": "-"
+       }
+      },
+      "dedupratio": {
+       "value": "-",
+       "source": {
+        "type": "NONE",
+        "data": "-"
+       }
+      },
+      "health": {
+       "value": "ONLINE",
+       "source": {
+        "type": "NONE",
+        "data": "-"
+       }
+      },
+      "altroot": {
+       "value": "-",
+       "source": {
+        "type": "NONE",
+        "data": "-"
+       }
+      }
+     },
+     "vdevs": {
+      "ada1p3": {
+       "name": "ada1p3",
+       "vdev_type": "disk",
+       "guid": 1036,
+       "path": "/dev/ada1p3",
+       "phys_path": "id1,enc@n0000000000000000/type@0/slot@2/elmdesc@Slot_01/p3",
+       "class": "normal",
+       "state": "ONLINE",
+       "properties": {
+        "size": {
+         "value": 999930462208,
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "allocated": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "free": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "checkpoint": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "expandsize": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "fragmentation": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "capacity": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "dedupratio": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "health": {
+         "value": "ONLINE",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "altroot": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        }
+       }
+      },
+      "ada0p3": {
+       "name": "ada0p3",
+       "vdev_type": "disk",
+       "guid": 1037,
+       "path": "/dev/ada0p3",
+       "phys_path": "id1,enc@n0000000000000000/type@0/slot@1/elmdesc@Slot_00/p3",
+       "class": "normal",
+       "state": "ONLINE",
+       "properties": {
+        "size": {
+         "value": 999930462208,
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "allocated": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "free": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "checkpoint": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "expandsize": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "fragmentation": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "capacity": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "dedupratio": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "health": {
+         "value": "ONLINE",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        },
+        "altroot": {
+         "value": "-",
+         "source": {
+          "type": "NONE",
+          "data": "-"
+         }
+        }
+       }
+      }
+     }
+    }
+   }
+  }
+ }
+}

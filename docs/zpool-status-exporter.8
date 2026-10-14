@@ -1,0 +1,330 @@
+.Dd October 13, 2026
+.Dt ZPOOL-STATUS-EXPORTER 8
+.Os
+.Sh NAME
+.Nm zpool-status-exporter
+.Nd Prometheus exporter for ZFS
+.Sh SYNOPSIS
+.Nm
+.Op Fl -web.listen-address Ns = Ns Ar address
+.Op Fl -web.config.file Ns = Ns Ar file
+.Op Fl -web.systemd-socket
+.Op Fl -web.telemetry-path Ns = Ns Ar path
+.Op Fl -\&[no-\&]collector. Ns Ar name
+.Op Fl -collect.interval Ns = Ns Ar duration
+.Op Fl -collect.dataset-interval Ns = Ns Ar duration
+.Op Fl -collect.smart-interval Ns = Ns Ar duration
+.Op Fl -collect.timeout Ns = Ns Ar duration
+.Op Fl -path. Ns Ar tool Ns = Ns Ar path
+.Op Fl -log.level Ns = Ns Ar level
+.Op Fl -log.format Ns = Ns Ar format
+.Nm
+.Fl -help
+.Nm
+.Fl -version
+.Sh DESCRIPTION
+The
+.Nm
+daemon is a Prometheus exporter for the Zettabyte File System (ZFS).
+It serves metrics over Hypertext Transfer Protocol (HTTP) for a Prometheus server to scrape.
+FreeBSD is the primary target platform.
+Linux is supported on a best-effort basis.
+.Pp
+The exporter runs as root because Self-Monitoring, Analysis and Reporting Technology (SMART) queries need raw access to disk devices.
+With the
+.Cm smart
+collector disabled, it can run as an unprivileged user.
+.Pp
+Each collector gathers data from the following sources.
+Collectors run in the background at their own interval, and a scrape returns the most recent result.
+.Bl -tag -width "datasets"
+.It Cm pool
+Pool and virtual device (vdev) state, capacity, errors, and scrub and resilver progress, from
+.Ql zpool status -j
+and
+.Ql zpool list -j .
+.It Cm iostat
+Pool and vdev input and output (I/O) rates and latencies, from
+.Ql zpool iostat -Hpvl -y Ar interval Li 1 .
+.It Cm arc
+Adaptive Replacement Cache (ARC) statistics, from
+.Ql sysctl kstat.zfs.misc.arcstats
+on FreeBSD and from
+.Pa /proc/spl/kstat/zfs/arcstats
+on Linux.
+.It Cm kstat
+Other ZFS kernel statistics (kstat) for the ZFS Intent Log (ZIL), dmu_tx, zfetch, abd, dnode, and vdev mirror, and per-dataset I/O counters.
+.It Cm datasets
+Dataset space usage, from
+.Xr zfs 8
+.Ql get .
+.It Cm smart
+SMART data, from
+.Ql smartctl -j -x -n standby .
+Disks in standby are not woken.
+.El
+.Pp
+All metric names begin with
+.Li zfs_ .
+The README in the project repository lists every metric with its labels and meaning.
+.Pp
+The disk-to-device mapping uses
+.Xr geom 8
+and
+.Xr glabel 8
+on FreeBSD and
+.Xr lsblk 8
+on Linux.
+.Sh OPTIONS
+Options are parsed by kingpin and accept either
+.Fl -option Ns = Ns Ar value
+or
+.Fl -option Ar value .
+Every boolean
+.Fl -collector. Ns Ar name
+option also has a
+.Fl -no-collector. Ns Ar name
+form that disables the collector.
+.Ss Web server
+.Bl -tag -width indent
+.It Fl -web.listen-address Ns = Ns Ar address
+Address and port to listen on.
+May be given more than once.
+The default is
+.Li :10058 .
+.It Fl -web.config.file Ns = Ns Ar file
+Path to an exporter-toolkit web configuration file that enables Transport Layer Security (TLS) and basic authentication.
+The default is empty, which serves plain HTTP without authentication.
+.It Fl -web.systemd-socket
+Use systemd socket activation instead of a listen address.
+Available on Linux only.
+.It Fl -web.telemetry-path Ns = Ns Ar path
+Path that serves metrics.
+The default is
+.Pa /metrics .
+The health check is served at
+.Pa /healthz .
+.El
+.Ss Collectors
+.Bl -tag -width indent
+.It Fl -collector.pool
+Collect pool and vdev state.
+Enabled by default.
+.It Fl -collector.iostat
+Collect pool and vdev I/O rates and latencies.
+Enabled by default.
+.It Fl -collector.arc
+Collect ARC statistics.
+Enabled by default.
+.It Fl -collector.kstat
+Collect other ZFS kernel statistics.
+Enabled by default.
+.It Fl -collector.datasets
+Collect dataset space usage.
+Enabled by default.
+.It Fl -collector.smart
+Collect SMART data.
+Enabled by default.
+.El
+.Ss Intervals
+Durations use the Go syntax, such as
+.Li 500ms ,
+.Li 10s ,
+or
+.Li 5m .
+.Bl -tag -width indent
+.It Fl -collect.interval Ns = Ns Ar duration
+Collection interval of the pool, iostat, arc, and kstat collectors.
+The default is
+.Li 10s .
+.It Fl -collect.dataset-interval Ns = Ns Ar duration
+Collection interval of the datasets collector.
+The default is
+.Li 1m .
+.It Fl -collect.smart-interval Ns = Ns Ar duration
+Collection interval of the smart collector.
+The default is
+.Li 10m .
+.It Fl -collect.timeout Ns = Ns Ar duration
+Timeout for each external command.
+The default is
+.Li 30s .
+.El
+.Ss Tool paths
+.Bl -tag -width indent
+.It Fl -path.zpool Ns = Ns Ar path
+The
+.Xr zpool 8
+command.
+The default is
+.Li zpool .
+.It Fl -path.zfs Ns = Ns Ar path
+The
+.Xr zfs 8
+command.
+The default is
+.Li zfs .
+.It Fl -path.smartctl Ns = Ns Ar path
+The
+.Xr smartctl 8
+command.
+The default is
+.Li smartctl .
+.It Fl -path.sysctl Ns = Ns Ar path
+The
+.Xr sysctl 8
+command.
+The default is
+.Li sysctl .
+.It Fl -path.geom Ns = Ns Ar path
+The
+.Xr geom 8
+command.
+The default is
+.Li geom .
+.It Fl -path.glabel Ns = Ns Ar path
+The
+.Xr glabel 8
+command.
+The default is
+.Li glabel .
+.It Fl -path.lsblk Ns = Ns Ar path
+The
+.Xr lsblk 8
+command.
+The default is
+.Li lsblk .
+.It Fl -path.kstat Ns = Ns Ar path
+Directory that holds the Linux ZFS kernel statistics.
+The default is
+.Pa /proc/spl/kstat/zfs .
+.El
+.Pp
+A command name without a slash is looked up in the
+.Ev PATH .
+.Ss Logging and information
+.Bl -tag -width indent
+.It Fl -log.level Ns = Ns Ar level
+Log verbosity: debug, info, warn, or error.
+The default is
+.Li info .
+.It Fl -log.format Ns = Ns Ar format
+Log format: logfmt or json.
+The default is
+.Li logfmt .
+.It Fl -help
+Print usage and exit.
+.It Fl -version
+Print version information and exit.
+.El
+.Sh ENVIRONMENT
+.Bl -tag -width ".Ev zpool_status_exporter_listen_address"
+.It Ev PATH
+Used to find the commands that the exporter runs.
+The FreeBSD rc script adds
+.Pa /sbin ,
+.Pa /usr/sbin ,
+.Pa /usr/local/sbin ,
+and
+.Pa /usr/local/bin .
+.It Ev ZPOOL_STATUS_EXPORTER_ARGS
+Linux only.
+Command-line arguments that the systemd unit passes to the exporter, set in
+.Pa /etc/sysconfig/zpool-status-exporter .
+.El
+.Ss rc.conf variables
+The following variables are read from
+.Xr rc.conf 5
+by the rc script on FreeBSD.
+.Bl -tag -width ".Va zpool_status_exporter_listen_address"
+.It Va zpool_status_exporter_enable
+Set to
+.Dq YES
+to start the exporter at boot.
+The default is
+.Dq NO .
+.It Va zpool_status_exporter_listen_address
+Address and port passed to
+.Fl -web.listen-address .
+The default is
+.Dq :10058 .
+.It Va zpool_status_exporter_args
+Additional command-line arguments.
+The default is empty.
+.It Va zpool_status_exporter_user
+User that runs the exporter.
+The default is
+.Dq root .
+.El
+.Pp
+The script runs the exporter under
+.Xr daemon 8 ,
+which restarts it when it exits and sends its output to
+.Xr syslogd 8
+with the tag
+.Dq zpool_status_exporter .
+.Sh FILES
+.Bl -tag -width ".Pa /usr/local/share/man/man8/zpool-status-exporter.8.gz" -compact
+.It Pa /usr/local/bin/zpool-status-exporter
+Executable on FreeBSD.
+.It Pa /usr/local/etc/rc.d/zpool_status_exporter
+rc script on FreeBSD.
+.It Pa /var/run/zpool_status_exporter.pid
+Process identifier file of the exporter on FreeBSD.
+.It Pa /var/run/zpool_status_exporter_supervisor.pid
+Process identifier file of the
+.Xr daemon 8
+supervisor on FreeBSD.
+.It Pa /usr/local/share/man/man8/zpool-status-exporter.8.gz
+Manual page on FreeBSD.
+.It Pa /usr/bin/zpool-status-exporter
+Executable on Linux.
+.It Pa /usr/lib/systemd/system/zpool-status-exporter.service
+systemd unit on Linux.
+.It Pa /etc/sysconfig/zpool-status-exporter
+Environment file of the systemd unit on Linux.
+.It Pa /usr/share/man/man8/zpool-status-exporter.8.gz
+Manual page on Linux.
+.El
+.Sh EXIT STATUS
+.Ex -std
+.Sh EXAMPLES
+Enable the exporter on FreeBSD:
+.Bd -literal -offset indent
+sysrc zpool_status_exporter_enable=YES
+service zpool_status_exporter start
+.Ed
+.Pp
+Listen on one address only, and disable the SMART collector, in
+.Pa /etc/rc.conf :
+.Bd -literal -offset indent
+zpool_status_exporter_enable="YES"
+zpool_status_exporter_listen_address="192.0.2.10:10058"
+zpool_status_exporter_args="--no-collector.smart"
+.Ed
+.Pp
+Enable the exporter on Linux:
+.Bd -literal -offset indent
+systemctl enable --now zpool-status-exporter
+.Ed
+.Pp
+Scrape the exporter from Prometheus:
+.Bd -literal -offset indent
+scrape_configs:
+  - job_name: zpool-status-exporter
+    scrape_interval: 15s
+    static_configs:
+      - targets: ["storage.example.net:10058"]
+.Ed
+.Sh SEE ALSO
+.Xr rc.conf 5 ,
+.Xr daemon 8 ,
+.Xr geom 8 ,
+.Xr glabel 8 ,
+.Xr smartctl 8 ,
+.Xr zfs 8 ,
+.Xr zpool 8
+.Sh HISTORY
+The
+.Nm
+utility was written to export ZFS pool, cache, dataset, and disk health metrics from FreeBSD to Prometheus.

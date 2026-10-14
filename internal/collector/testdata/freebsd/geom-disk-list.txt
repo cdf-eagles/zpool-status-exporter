@@ -1,0 +1,372 @@
+Geom name: nda0
+Providers:
+1. Name: nda0
+   Mediasize: 2000398934016 (1.8T)
+   Sectorsize: 512
+   Mode: r4w4e11
+   descr: Samsung SSD 990 PRO 2TB
+   lunid: 5000000000000001
+   ident: SERIAL0001
+   rotationrate: 0
+   fwsectors: 0
+   fwheads: 0
+
+Geom name: ada0
+Providers:
+1. Name: ada0
+   Mediasize: 1000204886016 (932G)
+   Sectorsize: 512
+   Stripesize: 4096
+   Stripeoffset: 0
+   Mode: r1w1e2
+   descr: Samsung SSD 870 EVO 1TB
+   lunid: 5000000000000002
+   ident: SERIAL0002
+   rotationrate: 0
+   fwsectors: 63
+   fwheads: 16
+
+Geom name: ada1
+Providers:
+1. Name: ada1
+   Mediasize: 1000204886016 (932G)
+   Sectorsize: 512
+   Stripesize: 4096
+   Stripeoffset: 0
+   Mode: r2w2e4
+   descr: Samsung SSD 870 EVO 1TB
+   lunid: 5000000000000003
+   ident: SERIAL0003
+   rotationrate: 0
+   fwsectors: 63
+   fwheads: 16
+
+Geom name: ada2
+Providers:
+1. Name: ada2
+   Mediasize: 2000398934016 (1.8T)
+   Sectorsize: 512
+   Stripesize: 4096
+   Stripeoffset: 0
+   Mode: r1w1e3
+   descr: Samsung SSD 870 EVO 2TB
+   lunid: 5000000000000004
+   ident: SERIAL0004
+   rotationrate: 0
+   fwsectors: 63
+   fwheads: 16
+
+Geom name: ada3
+Providers:
+1. Name: ada3
+   Mediasize: 2000398934016 (1.8T)
+   Sectorsize: 512
+   Stripesize: 4096
+   Stripeoffset: 0
+   Mode: r1w1e3
+   descr: Samsung SSD 870 EVO 2TB
+   lunid: 5000000000000005
+   ident: SERIAL0005
+   rotationrate: 0
+   fwsectors: 63
+   fwheads: 16
+
+Geom name: da6
+Providers:
+1. Name: da6
+   Mediasize: 250059350016 (233G)
+   Sectorsize: 512
+   Stripesize: 4096
+   Stripeoffset: 0
+   Mode: r1w1e3
+   descr: ATA Samsung SSD 870
+   lunid: 5000000000000006
+   ident: SERIAL0006
+   rotationrate: 0
+   fwsectors: 63
+   fwheads: 255
+
+Geom name: da26
+Providers:
+1. Name: da26
+   Mediasize: 8001563222016 (7.3T)
+   Sectorsize: 512
+   Stripesize: 4096
+   Stripeoffset: 0
+   Mode: r1w1e3
+   descr: ATA HGST HUH728080AL
+   lunid: 5000000000000007
+   ident: SERIAL0007
+   rotationrate: 7200
+   fwsectors: 63
+   fwheads: 255
+
+Geom name: da27
+Providers:
+1. Name: da27
+   Mediasize: 8001563222016 (7.3T)
+   Sectorsize: 512
+   Stripesize: 4096
+   Stripeoffset: 0
+   Mode: r1w1e3
+   descr: ATA HGST HUH728080AL
+   lunid: 5000000000000008
+   ident: SERIAL0008
+   rotationrate: 7200
+   fwsectors: 63
+   fwheads: 255
+
+Geom name: da25
+Providers:
+1. Name: da25
+   Mediasize: 8001563222016 (7.3T)
+   Sectorsize: 512
+   Stripesize: 4096
+   Stripeoffset: 0
+   Mode: r1w1e3
+   descr: ATA HGST HUH728080AL
+   lunid: 5000000000000009
+   ident: SERIAL0009
+   rotationrate: 7200
+   fwsectors: 63
+   fwheads: 255
+
+Geom name: da24
+Providers:
+1. Name: da24
+   Mediasize: 8001563222016 (7.3T)
+   Sectorsize: 512
+   Stripesize: 4096
+   Stripeoffset: 0
+   Mode: r1w1e3
+   descr: ATA HGST HUH728080AL
+   lunid: 500000000000000a
+   ident: SERIAL0010
+   rotationrate: 7200
+   fwsectors: 63
+   fwheads: 255
+
+Geom name: da31
+Providers:
+1. Name: da31
+   Mediasize: 8001563222016 (7.3T)
+   Sectorsize: 512
+   Stripesize: 4096
+   Stripeoffset: 0
+   Mode: r1w1e3
+   descr: ATA HGST HUH728080AL
+   lunid: 500000000000000b
+   ident: SERIAL0011
+   rotationrate: 7200
+   fwsectors: 63
+   fwheads: 255
+
+Geom name: da28
+Providers:
+1. Name: da28
+   Mediasize: 8001563222016 (7.3T)
+   Sectorsize: 512
+   Stripesize: 4096
+   Stripeoffset: 0
+   Mode: r1w1e3
+   descr: ATA HGST HUH728080AL
+   lunid: 500000000000000c
+   ident: SERIAL0012
+   rotationrate: 7200
+   fwsectors: 63
+   fwheads: 255
+
+Geom name: da22
+Providers:
+1. Name: da22
+   Mediasize: 8001563222016 (7.3T)
+   Sectorsize: 512
+   Stripesize: 4096
+   Stripeoffset: 0
+   Mode: r1w1e3
+   descr: ATA HGST HUH728080AL
+   lunid: 500000000000000d
+   ident: SERIAL0013
+   rotationrate: 7200
+   fwsectors: 63
+   fwheads: 255
+
+Geom name: da23
+Providers:
+1. Name: da23
+   Mediasize: 8001563222016 (7.3T)
+   Sectorsize: 512
+   Stripesize: 4096
+   Stripeoffset: 0
+   Mode: r1w1e3
+   descr: ATA HGST HUH728080AL
+   lunid: 500000000000000e
+   ident: SERIAL0014
+   rotationrate: 7200
+   fwsectors: 63
+   fwheads: 255
+
+Geom name: da21
+Providers:
+1. Name: da21
+   Mediasize: 8001563222016 (7.3T)
+   Sectorsize: 512
+   Stripesize: 4096
+   Stripeoffset: 0
+   Mode: r1w1e3
+   descr: ATA HGST HUH728080AL
+   lunid: 500000000000000f
+   ident: SERIAL0015
+   rotationrate: 7200
+   fwsectors: 63
+   fwheads: 255
+
+Geom name: da20
+Providers:
+1. Name: da20
+   Mediasize: 8001563222016 (7.3T)
+   Sectorsize: 512
+   Stripesize: 4096
+   Stripeoffset: 0
+   Mode: r1w1e3
+   descr: ATA HGST HUH728080AL
+   lunid: 5000000000000010
+   ident: SERIAL0016
+   rotationrate: 7200
+   fwsectors: 63
+   fwheads: 255
+
+Geom name: da9
+Providers:
+1. Name: da9
+   Mediasize: 250059350016 (233G)
+   Sectorsize: 512
+   Stripesize: 4096
+   Stripeoffset: 0
+   Mode: r1w1e3
+   descr: ATA Samsung SSD 870
+   lunid: 5000000000000011
+   ident: SERIAL0017
+   rotationrate: 0
+   fwsectors: 63
+   fwheads: 255
+
+Geom name: da29
+Providers:
+1. Name: da29
+   Mediasize: 8001563222016 (7.3T)
+   Sectorsize: 512
+   Stripesize: 4096
+   Stripeoffset: 0
+   Mode: r1w1e3
+   descr: ATA HGST HUH728080AL
+   lunid: 5000000000000012
+   ident: SERIAL0018
+   rotationrate: 7200
+   fwsectors: 63
+   fwheads: 255
+
+Geom name: da8
+Providers:
+1. Name: da8
+   Mediasize: 250059350016 (233G)
+   Sectorsize: 512
+   Stripesize: 4096
+   Stripeoffset: 0
+   Mode: r1w1e3
+   descr: ATA Samsung SSD 870
+   lunid: 5000000000000013
+   ident: SERIAL0019
+   rotationrate: 0
+   fwsectors: 63
+   fwheads: 255
+
+Geom name: da7
+Providers:
+1. Name: da7
+   Mediasize: 250059350016 (233G)
+   Sectorsize: 512
+   Stripesize: 4096
+   Stripeoffset: 0
+   Mode: r1w1e3
+   descr: ATA Samsung SSD 870
+   lunid: 5000000000000014
+   ident: SERIAL0020
+   rotationrate: 0
+   fwsectors: 63
+   fwheads: 255
+
+Geom name: da10
+Providers:
+1. Name: da10
+   Mediasize: 250059350016 (233G)
+   Sectorsize: 512
+   Stripesize: 4096
+   Stripeoffset: 0
+   Mode: r1w1e3
+   descr: ATA Samsung SSD 870
+   lunid: 5000000000000015
+   ident: SERIAL0021
+   rotationrate: 0
+   fwsectors: 63
+   fwheads: 255
+
+Geom name: da5
+Providers:
+1. Name: da5
+   Mediasize: 500107862016 (466G)
+   Sectorsize: 512
+   Stripesize: 4096
+   Stripeoffset: 0
+   Mode: r1w1e3
+   descr: ATA Samsung SSD 870
+   lunid: 5000000000000016
+   ident: SERIAL0022
+   rotationrate: 0
+   fwsectors: 63
+   fwheads: 255
+
+Geom name: da4
+Providers:
+1. Name: da4
+   Mediasize: 500107862016 (466G)
+   Sectorsize: 512
+   Stripesize: 4096
+   Stripeoffset: 0
+   Mode: r1w1e3
+   descr: ATA Samsung SSD 870
+   lunid: 5000000000000017
+   ident: SERIAL0023
+   rotationrate: 0
+   fwsectors: 63
+   fwheads: 255
+
+Geom name: da30
+Providers:
+1. Name: da30
+   Mediasize: 8001563222016 (7.3T)
+   Sectorsize: 512
+   Stripesize: 4096
+   Stripeoffset: 0
+   Mode: r1w1e3
+   descr: ATA HGST HUH728080AL
+   lunid: 5000000000000018
+   ident: SERIAL0024
+   rotationrate: 7200
+   fwsectors: 63
+   fwheads: 255
+
+Geom name: da11
+Providers:
+1. Name: da11
+   Mediasize: 250059350016 (233G)
+   Sectorsize: 512
+   Stripesize: 4096
+   Stripeoffset: 0
+   Mode: r1w1e3
+   descr: ATA Samsung SSD 870
+   lunid: 5000000000000019
+   ident: SERIAL0025
+   rotationrate: 0
+   fwsectors: 63
+   fwheads: 255

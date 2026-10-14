@@ -1,0 +1,9 @@
+72 1 0x01 7 2160 4239289042 1053463651934
+name                            type data
+dataset_name                    7    tank/media library
+writes                          4    1
+nwritten                        4    2
+reads                           4    3
+nread                           4    4
+nunlinks                        4    0
+nunlinked                       4    0

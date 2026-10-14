@@ -1,0 +1,4 @@
+26 1 0x01 15 4080 4171190010 1053463642883
+name                            type data
+zil_commit_count                4    98765
+zil_commit_writer_count         4    54321

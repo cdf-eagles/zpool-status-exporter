@@ -1,0 +1,5 @@
+69 1 0x01 2 544 4239151201 1053463650021
+name                            type data
+trim_extents_written            4    0
+arc_read_count                  4    4096
+arc_read_bytes                  4    1048576
