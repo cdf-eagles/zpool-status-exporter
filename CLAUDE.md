@@ -54,8 +54,9 @@ repository and are not repeated here.
 ## Branches and releases
 
 - `main` and `develop`. Work branches use the prefixes `fix/`, `feat/`,
-  `major/`, `build/`, and `ignore/` and merge into `develop` by pull request
-  with a merge commit (the prefix decides the version bump).
+  `major/`, `build/`, and `ignore/` and are squash merged into `develop` by
+  pull request. The prefix decides the version bump; `next-version.sh` reads
+  it from each squash commit's pull request number with `gh`.
 - `scripts/next-version.sh` proposes the next version. A signed
   `vX.Y.Z-rc.N` tag on `develop` builds and publishes a pre-release; release
   candidate artifacts carry the plain `X.Y.Z` version so they can be promoted

@@ -74,7 +74,11 @@ zfs_smart_temperature_celsius * on (device) group_left (disk) zfs_smart_device_i
 (time() - zfs_pool_scan_end_time_seconds) / 86400
 ```
 
-`examples/alerts.yml` holds example Prometheus alerting rules.
+`examples/alerts.yml` holds example Prometheus alerting rules, and
+`examples/grafana-dashboard.json` is an example Grafana dashboard (pools,
+vdevs, I/O, ARC, SMART, datasets, and collector health) to import with
+Grafana's dashboard import, choosing a Prometheus data source. Neither file
+is installed by the packages.
 
 ## Metrics
 
@@ -189,11 +193,13 @@ step with the code; regenerate it with
 
 ## Releases
 
-Work merges into `develop` through pull requests from `fix/`, `feat/`,
-`major/`, `build/`, or `ignore/` branches. A release is cut from `develop`:
+Work is squash merged into `develop` through pull requests from `fix/`,
+`feat/`, `major/`, `build/`, or `ignore/` branches. A release is cut from
+`develop`:
 
 1. `scripts/next-version.sh` proposes the next version from the branch
-   prefixes merged since the last tag.
+   prefixes of the pull requests merged since the last tag (it looks them up
+   with the GitHub CLI, `gh`).
 2. A signed release candidate tag `vX.Y.Z-rc.N` on a `develop` commit builds
    the binaries and the FreeBSD and RPM packages and publishes a pre-release.
 3. After the release candidate is proven, `main` is fast-forwarded to the
