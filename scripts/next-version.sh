@@ -1,10 +1,14 @@
 #!/bin/sh
-# Propose the next release version from the branches merged into develop
-# since the last release tag, and print the commands that tag the next
-# release candidate.
+# Propose the next release version from the pull requests merged into
+# develop since the last release tag, and print the commands that tag the
+# next release candidate.
 #
-# Branch prefixes: major/ bumps the major version, feat/ the minor version,
-# fix/ the patch version; build/, ignore/, and other branches do not bump.
+# Each pull request's branch prefix decides the bump: major/ bumps the major
+# version, feat/ the minor version, fix/ the patch version; build/, ignore/,
+# dependabot/, and other branches do not bump. Pull requests are squash
+# merged, so the branch is looked up with the GitHub CLI (gh) from the
+# "(#N)" at the end of each commit subject. "Merge pull request #N from
+# owner/branch" subjects are read directly.
 #
 # Usage: scripts/next-version.sh [ref]   (default ref: origin/develop)
 set -eu
@@ -24,8 +28,24 @@ else
 	base=0.0.0
 fi
 
+subjects=$(git log --first-parent --format=%s "$range")
+branches=$(printf '%s\n' "$subjects" | sed -n 's|^Merge pull request #[0-9][0-9]* from [^/][^/]*/||p')
+numbers=$(printf '%s\n' "$subjects" | grep -v '^Merge pull request #' | sed -n 's/.*(#\([0-9][0-9]*\))$/\1/p')
+if [ -n "$numbers" ]; then
+	command -v gh > /dev/null 2>&1 || {
+		echo "next-version: the GitHub CLI (gh) is needed to read squash-merged pull requests" >&2
+		exit 2
+	}
+	for n in $numbers; do
+		b=$(gh pr view "$n" --json headRefName --jq .headRefName) || {
+			echo "next-version: cannot read pull request #${n} with gh" >&2
+			exit 2
+		}
+		branches=$(printf '%s\n%s' "$branches" "$b")
+	done
+fi
+
 bump="none"
-branches=$(git log --merges --format=%s "$range" | sed -n 's|^Merge pull request #[0-9][0-9]* from [^/][^/]*/||p')
 for b in $branches; do
 	case "$b" in
 		major/*) bump="major" ;;
@@ -35,7 +55,7 @@ for b in $branches; do
 done
 
 if [ "$bump" = none ]; then
-	echo "next-version: no fix/, feat/, or major/ branch merged since ${last:-the first commit}" >&2
+	echo "next-version: no fix/, feat/, or major/ pull request merged since ${last:-the first commit}" >&2
 	exit 1
 fi
 
