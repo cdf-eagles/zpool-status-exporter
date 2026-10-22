@@ -1,5 +1,11 @@
 # Changelog
 
+- 2026-10-22
+  - Continuous integration (CI) now also runs on every push of `main` and every Monday, so new vulnerability advisories surface without a commit.
+  - Added a secret scan job that runs gitleaks over the full history of an unshallow clone.
+  - The Lint job now runs yamllint, actionlint, and the remaining pre-commit hooks, so each documented gate runs on every pull request; the separate Check YAML workflow, which skipped pushes to open pull requests and unrelated file changes, is removed.
+  - Pinned govulncheck, the lint tools, and the runner image (`ubuntu-24.04`) to versions instead of `latest`.
+
 - 2026-10-14
   - `scripts/next-version.sh` prints the command that fast-forwards `main` without a release when only `ignore/` pull requests were merged since the last release.
   - Fixed the pool collector reporting a failure on a host with no ZFS pools: OpenZFS 2.4 prints nothing for `zpool list -j` there, which now counts as no pools. Empty `zpool list` output while `zpool status` reports pools is still an error.

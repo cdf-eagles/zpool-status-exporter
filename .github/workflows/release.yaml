@@ -20,7 +20,7 @@ env:
 jobs:
   verify:
     name: Verify the tag
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     outputs:
       kind: ${{ steps.check.outputs.kind }}
       version: ${{ steps.check.outputs.version }}
@@ -76,7 +76,7 @@ jobs:
     name: Build binaries and the RPM package
     needs: verify
     if: needs.verify.outputs.kind == 'rc'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: Check out code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
@@ -118,7 +118,7 @@ jobs:
   freebsd-pkg:
     name: Build the FreeBSD package
     needs: [verify, build]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: Check out code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
@@ -153,7 +153,7 @@ jobs:
   publish-rc:
     name: Publish the release candidate
     needs: [verify, build, freebsd-pkg]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
       contents: write
       id-token: write
@@ -187,7 +187,7 @@ jobs:
     name: Publish the release from its release candidate
     needs: verify
     if: needs.verify.outputs.kind == 'final'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
       contents: write
       attestations: read
