@@ -1,5 +1,8 @@
 # Changelog
 
+- 2026-10-22
+  - Raised the required Go version to 1.27.3, which fixes GO-2026-6809: the standard library `crypto/x509` package now distrusts compromised intermediate certificates, and the exporter's TLS support called into the affected code.
+
 - 2026-10-14
   - `scripts/next-version.sh` prints the command that fast-forwards `main` without a release when only `ignore/` pull requests were merged since the last release.
   - Fixed the pool collector reporting a failure on a host with no ZFS pools: OpenZFS 2.4 prints nothing for `zpool list -j` there, which now counts as no pools. Empty `zpool list` output while `zpool status` reports pools is still an error.
