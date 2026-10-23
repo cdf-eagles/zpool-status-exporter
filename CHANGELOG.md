@@ -1,6 +1,8 @@
 # Changelog
 
 - 2026-10-23
+  - Added SMART self-test metrics for Advanced Technology Attachment (ATA) and NVM Express (NVMe) disks, read from the output the SMART collector already fetches: `zfs_smart_self_test_passed` and `zfs_smart_self_test_age_seconds` for the newest completed or failed test of each type, and `zfs_smart_self_test_in_progress`. The ATA self-test log counts lifetime hours in 16 bits, so the age is corrected for wraparound.
+  - Added the SmartSelfTestFailed and SmartSelfTestOverdue example alerts.
   - Work now merges into `main` by squash-merged pull request; the `develop` branch is retired. Release candidate tags go on `main` commits, and a release is promoted by tagging the release candidate's commit, with no fast-forward of `main`.
   - Dependabot now opens its pull requests against `main`, and `scripts/next-version.sh` reads `origin/main` by default.
   - CI tool versions now live where Dependabot updates them: the Python tools in `ci/requirements.txt`, actionlint and the golangci-lint version in `.pre-commit-config.yaml`, and govulncheck in a separate `ci/tools/go.mod` module that stays out of the exporter's build.

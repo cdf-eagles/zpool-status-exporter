@@ -62,6 +62,21 @@ groups:
         annotations:
           summary: "The SMART error log of {{ $labels.device }} gained entries in the last day"
 
+      - alert: SmartSelfTestFailed
+        expr: zfs_smart_self_test_passed == 0
+        labels:
+          severity: critical
+        annotations:
+          summary: "The latest {{ $labels.type }} SMART self-test of {{ $labels.device }} on {{ $labels.instance }} failed"
+
+      - alert: SmartSelfTestOverdue
+        expr: min by (instance, device) (zfs_smart_self_test_age_seconds) > 7 * 86400
+        for: 1h
+        labels:
+          severity: warning
+        annotations:
+          summary: "SMART device {{ $labels.device }} on {{ $labels.instance }} has had no self-test in the last 7 days"
+
       - alert: ZfsExporterCollectorFailing
         expr: zfs_exporter_collector_up == 0
         for: 15m

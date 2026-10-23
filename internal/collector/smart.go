@@ -177,7 +177,10 @@ type smartJSON struct {
 			Count *float64 `json:"count"`
 		} `json:"summary"`
 	} `json:"ata_smart_error_log"`
-	NVMeLog map[string]json.RawMessage `json:"nvme_smart_health_information_log"`
+	NVMeLog         map[string]json.RawMessage `json:"nvme_smart_health_information_log"`
+	ATASelfTestLog  *ataSelfTestLog            `json:"ata_smart_self_test_log"`
+	ATAData         *ataSmartData              `json:"ata_smart_data"`
+	NVMeSelfTestLog *nvmeSelfTestLog           `json:"nvme_self_test_log"`
 }
 
 func (s *smartJSON) wwn() string {
@@ -345,6 +348,7 @@ func (j *smartJob) collectDevice(ctx context.Context, b *batch, t smartTarget, d
 	if v, ok := s.errorLogEntries(); ok {
 		b.add(smartErrorLog, v, device)
 	}
+	addSelfTests(b, device, &s)
 	if s.ATAAttributes != nil {
 		for _, a := range s.ATAAttributes.Table {
 			id := strconv.Itoa(a.ID)

@@ -2,6 +2,7 @@ package collector
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"strings"
 	"testing"
@@ -187,5 +188,216 @@ func TestErrorLogSummary(t *testing.T) {
 	}
 	if _, ok := (&smartJSON{}).errorLogEntries(); ok {
 		t.Fatal("no log must report not ok")
+	}
+}
+
+// smartctlVariant returns a captured smartctl document with one change
+// applied, so the cases a healthy host never prints use real field layouts.
+func smartctlVariant(t *testing.T, name string, edit func(doc map[string]any)) string {
+	t.Helper()
+	var doc map[string]any
+	if err := json.Unmarshal([]byte(fixture(t, name)), &doc); err != nil {
+		t.Fatal(err)
+	}
+	edit(doc)
+	out, err := json.Marshal(doc)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return string(out)
+}
+
+func sub(t *testing.T, v any, keys ...string) map[string]any {
+	t.Helper()
+	m, ok := v.(map[string]any)
+	if !ok {
+		t.Fatalf("not a JSON object: %v", v)
+	}
+	for _, k := range keys {
+		if m, ok = m[k].(map[string]any); !ok {
+			t.Fatalf("no JSON object %q", k)
+		}
+	}
+	return m
+}
+
+func rowsOf(t *testing.T, v any) []any {
+	t.Helper()
+	rows, ok := v.([]any)
+	if !ok {
+		t.Fatalf("not a JSON array: %v", v)
+	}
+	return rows
+}
+
+func ataRows(t *testing.T, doc map[string]any) []any {
+	t.Helper()
+	return rowsOf(t, sub(t, doc, "ata_smart_self_test_log", "extended")["table"])
+}
+
+func nvmeRows(t *testing.T, doc map[string]any) []any {
+	t.Helper()
+	return rowsOf(t, sub(t, doc, "nvme_self_test_log")["table"])
+}
+
+func setStatus(t *testing.T, row any, value float64) { sub(t, row, "status")["value"] = value }
+
+func smartWith(t *testing.T, cmd, out string) map[string]float64 {
+	t.Helper()
+	f := freebsdFake(t)
+	f.Set(cmd, runner.Response{Stdout: out})
+	return collect(t, newSmartJob(f))
+}
+
+const hour = 3600
+
+func TestSmartSelfTestsFreeBSD(t *testing.T) {
+	got := collect(t, newSmartJob(freebsdFake(t)))
+
+	want(t, got, `zfs_smart_self_test_passed{device="ada0",type="short"}`, 1)
+	want(t, got, `zfs_smart_self_test_age_seconds{device="ada0",type="short"}`, 14*hour)
+	want(t, got, `zfs_smart_self_test_passed{device="ada0",type="extended"}`, 1)
+	want(t, got, `zfs_smart_self_test_age_seconds{device="ada0",type="extended"}`, 299*hour)
+	want(t, got, `zfs_smart_self_test_in_progress{device="ada0"}`, 0)
+
+	// da29 powered on 76920 hours, but its log counts lifetime hours in 16
+	// bits and shows 11370 for the newest test.
+	want(t, got, `zfs_smart_self_test_age_seconds{device="da29",type="short"}`, 14*hour)
+	want(t, got, `zfs_smart_self_test_age_seconds{device="da29",type="extended"}`, 260*hour)
+	want(t, got, `zfs_smart_self_test_in_progress{device="da29"}`, 0)
+
+	want(t, got, `zfs_smart_self_test_passed{device="nvme0",type="short"}`, 1)
+	want(t, got, `zfs_smart_self_test_age_seconds{device="nvme0",type="short"}`, 14*hour)
+	want(t, got, `zfs_smart_self_test_passed{device="nvme0",type="extended"}`, 1)
+	want(t, got, `zfs_smart_self_test_age_seconds{device="nvme0",type="extended"}`, 301*hour)
+	want(t, got, `zfs_smart_self_test_in_progress{device="nvme0"}`, 0)
+
+	if n := count(got, "zfs_smart_self_test_passed{"); n != 6 {
+		t.Fatalf("self-test series = %d, want 6", n)
+	}
+	absent(t, got, `zfs_smart_self_test_passed{device="ada0",type="other"`)
+}
+
+func TestSmartSelfTestAtaOutcomes(t *testing.T) {
+	variant := func(edit func(doc map[string]any)) map[string]float64 {
+		return smartWith(t, cmdSmartAd, smartctlVariant(t, "freebsd/smartctl-x-ada0.json", edit))
+	}
+
+	got := variant(func(doc map[string]any) { setStatus(t, ataRows(t, doc)[0], 7) })
+	want(t, got, `zfs_smart_self_test_passed{device="ada0",type="short"}`, 0)
+	want(t, got, `zfs_smart_self_test_age_seconds{device="ada0",type="short"}`, 14*hour)
+	want(t, got, `zfs_smart_self_test_passed{device="ada0",type="extended"}`, 1)
+
+	// An aborted test is skipped; the next newest short test counts.
+	got = variant(func(doc map[string]any) { setStatus(t, ataRows(t, doc)[0], 1) })
+	want(t, got, `zfs_smart_self_test_passed{device="ada0",type="short"}`, 1)
+	want(t, got, `zfs_smart_self_test_age_seconds{device="ada0",type="short"}`, 38*hour)
+
+	got = variant(func(doc map[string]any) {
+		for _, row := range ataRows(t, doc) {
+			if sub(t, row, "type")["value"] == float64(1) {
+				setStatus(t, row, 2)
+			}
+		}
+	})
+	absent(t, got, `zfs_smart_self_test_passed{device="ada0",type="short"`)
+	want(t, got, `zfs_smart_self_test_passed{device="ada0",type="extended"}`, 1)
+
+	got = variant(func(doc map[string]any) {
+		log := sub(t, doc, "ata_smart_self_test_log")
+		log["standard"] = log["extended"]
+		delete(log, "extended")
+	})
+	want(t, got, `zfs_smart_self_test_age_seconds{device="ada0",type="extended"}`, 299*hour)
+
+	got = variant(func(doc map[string]any) {
+		rows := ataRows(t, doc)
+		sub(t, rows[0], "type")["value"] = float64(4)
+		sub(t, rows[1], "type")["value"] = float64(99)
+		sub(t, rows[2], "type")["value"] = float64(3)
+		for _, row := range rows {
+			if sub(t, row, "type")["value"] == float64(2) {
+				sub(t, row, "type")["value"] = float64(130)
+			}
+		}
+	})
+	want(t, got, `zfs_smart_self_test_age_seconds{device="ada0",type="selective"}`, 14*hour)
+	want(t, got, `zfs_smart_self_test_age_seconds{device="ada0",type="other"}`, 38*hour)
+	want(t, got, `zfs_smart_self_test_age_seconds{device="ada0",type="conveyance"}`, 62*hour)
+	want(t, got, `zfs_smart_self_test_age_seconds{device="ada0",type="extended"}`, 299*hour)
+
+	got = variant(func(doc map[string]any) {
+		sub(t, doc, "ata_smart_data", "self_test", "status")["value"] = float64(0xF9)
+	})
+	want(t, got, `zfs_smart_self_test_in_progress{device="ada0"}`, 1)
+
+	got = variant(func(doc map[string]any) {
+		delete(doc, "power_on_time")
+		delete(sub(t, doc, "ata_smart_data"), "self_test")
+	})
+	want(t, got, `zfs_smart_self_test_passed{device="ada0",type="short"}`, 1)
+	absent(t, got, `zfs_smart_self_test_age_seconds{device="ada0"`)
+	absent(t, got, `zfs_smart_self_test_in_progress{device="ada0"`)
+}
+
+func TestSmartSelfTestNVMeOutcomes(t *testing.T) {
+	variant := func(edit func(doc map[string]any)) map[string]float64 {
+		return smartWith(t, cmdSmartNv, smartctlVariant(t, "freebsd/smartctl-x-nvme0.json", edit))
+	}
+	result := func(row any, v float64) { sub(t, row, "self_test_result")["value"] = v }
+
+	got := variant(func(doc map[string]any) { result(nvmeRows(t, doc)[0], 7) })
+	want(t, got, `zfs_smart_self_test_passed{device="nvme0",type="short"}`, 0)
+	want(t, got, `zfs_smart_self_test_age_seconds{device="nvme0",type="short"}`, 14*hour)
+
+	got = variant(func(doc map[string]any) { result(nvmeRows(t, doc)[0], 1) })
+	want(t, got, `zfs_smart_self_test_passed{device="nvme0",type="short"}`, 1)
+	want(t, got, `zfs_smart_self_test_age_seconds{device="nvme0",type="short"}`, 38*hour)
+
+	got = variant(func(doc map[string]any) {
+		rows := nvmeRows(t, doc)
+		sub(t, rows[0], "self_test_code")["value"] = float64(14)
+		result(rows[1], 15)
+	})
+	want(t, got, `zfs_smart_self_test_age_seconds{device="nvme0",type="other"}`, 14*hour)
+	want(t, got, `zfs_smart_self_test_age_seconds{device="nvme0",type="short"}`, 62*hour)
+
+	got = variant(func(doc map[string]any) {
+		sub(t, doc, "nvme_self_test_log", "current_self_test_operation")["value"] = float64(1)
+	})
+	want(t, got, `zfs_smart_self_test_in_progress{device="nvme0"}`, 1)
+
+	got = variant(func(doc map[string]any) {
+		delete(sub(t, doc, "nvme_self_test_log"), "current_self_test_operation")
+		delete(doc, "power_on_time")
+	})
+	want(t, got, `zfs_smart_self_test_passed{device="nvme0",type="short"}`, 1)
+	absent(t, got, `zfs_smart_self_test_age_seconds{device="nvme0"`)
+	absent(t, got, `zfs_smart_self_test_in_progress{device="nvme0"`)
+}
+
+func TestSmartSelfTestHelpers(t *testing.T) {
+	for status, want := range map[int][2]bool{0: {true, true}, 1: {}, 2: {}, 3: {false, true}, 8: {false, true}, 9: {}, 249: {}} {
+		if p, ok := ataOutcome(status); p != want[0] || ok != want[1] {
+			t.Errorf("ataOutcome(%d) = %v, %v", status, p, ok)
+		}
+	}
+	for result, want := range map[int][2]bool{0: {true, true}, 1: {}, 4: {}, 5: {false, true}, 7: {false, true}, 8: {}, 15: {}} {
+		if p, ok := nvmeOutcome(result); p != want[0] || ok != want[1] {
+			t.Errorf("nvmeOutcome(%d) = %v, %v", result, p, ok)
+		}
+	}
+	for _, c := range []struct {
+		hours, lifetime, want float64
+	}{
+		{38781, 38767, 14},
+		{76920, 11370, 14},
+		{65536, 0, 0},
+		{70000, 4464, 0},
+		{100, 101, 0},
+	} {
+		if got := ataSelfTestAgeHours(c.hours, c.lifetime); got != c.want {
+			t.Errorf("ataSelfTestAgeHours(%v, %v) = %v, want %v", c.hours, c.lifetime, got, c.want)
+		}
 	}
 }
