@@ -18,3 +18,30 @@ updates:
     groups:
       go-modules:
         patterns: ["*"]
+
+  - package-ecosystem: gomod
+    directory: /ci/tools
+    target-branch: develop
+    schedule:
+      interval: weekly
+    groups:
+      ci-go-tools:
+        patterns: ["*"]
+
+  - package-ecosystem: pip
+    directory: /ci
+    target-branch: develop
+    schedule:
+      interval: weekly
+    groups:
+      ci-python-tools:
+        patterns: ["*"]
+
+  - package-ecosystem: pre-commit
+    directory: /
+    target-branch: develop
+    schedule:
+      interval: weekly
+    groups:
+      pre-commit-hooks:
+        patterns: ["*"]

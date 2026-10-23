@@ -182,8 +182,15 @@ is installed by the packages.
 ```sh
 go test -race ./...
 golangci-lint run ./...
-govulncheck ./...
+go tool -modfile=ci/tools/go.mod govulncheck ./...
+pre-commit run --all-files
 ```
+
+Continuous integration (CI) takes its tool versions from files Dependabot
+updates: the Python tools from `ci/requirements.txt`, actionlint and the
+golangci-lint version from `.pre-commit-config.yaml`, and govulncheck from
+`ci/tools/go.mod`, a separate module that stays out of the exporter's build.
+gitleaks is pinned with its checksum in `.github/workflows/ci.yaml`.
 
 The tests run every collector against command output captured on a FreeBSD
 15.1 host (`internal/collector/testdata/freebsd`, with serial numbers, WWNs,
