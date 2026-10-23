@@ -1,6 +1,8 @@
 # Changelog
 
 - 2026-10-23
+  - The secret scan now covers the history of the checked-out commit (`--log-opts="HEAD"`), so a secret on another branch no longer fails every run; checkouts no longer keep their credentials.
+  - A weekly Tool drift job opens an issue when the gitleaks pin falls behind its latest release, and a pre-commit push hook runs gitleaks over the commits being pushed.
   - Added SMART self-test metrics for Advanced Technology Attachment (ATA) and NVM Express (NVMe) disks, read from the output the SMART collector already fetches: `zfs_smart_self_test_passed` and `zfs_smart_self_test_age_seconds` for the newest completed or failed test of each type, and `zfs_smart_self_test_in_progress`. The ATA self-test log counts lifetime hours in 16 bits, so the age is corrected for wraparound.
   - Added the SmartSelfTestFailed and SmartSelfTestOverdue example alerts.
   - Work now merges into `main` by squash-merged pull request; the `develop` branch is retired. Release candidate tags go on `main` commits, and a release is promoted by tagging the release candidate's commit, with no fast-forward of `main`.
