@@ -36,9 +36,13 @@ repository and are not repeated here.
 - A new test must fail against the code before the fix.
 - Gates before staging: `go test -race ./...` (coverage at least 90 percent),
   `golangci-lint run ./...` for `GOOS=linux` and `GOOS=freebsd` with the
-  committed `.golangci.yml`, `govulncheck ./...`, `shellcheck -s sh` on every
-  shell script, `yamllint .`, `actionlint`, and `pre-commit run --all-files`.
+  committed `.golangci.yml`, `go tool -modfile=ci/tools/go.mod govulncheck ./...`,
+  `shellcheck -s sh` on every shell script, `yamllint .`, `actionlint`, and
+  `pre-commit run --all-files`.
   golangci-lint must be built with the Go version in `go.mod`.
+- CI tool versions live in `ci/requirements.txt`, `.pre-commit-config.yaml`,
+  and `ci/tools/go.mod`, where Dependabot updates them; never pin one in a
+  workflow `env:` block unless it is a release download verified by checksum.
 
 ## Scripts and packaging
 

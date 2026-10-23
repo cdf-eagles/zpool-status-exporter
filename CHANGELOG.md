@@ -1,5 +1,9 @@
 # Changelog
 
+- 2026-10-23
+  - CI tool versions now live where Dependabot updates them: the Python tools in `ci/requirements.txt`, actionlint and the golangci-lint version in `.pre-commit-config.yaml`, and govulncheck in a separate `ci/tools/go.mod` module that stays out of the exporter's build.
+  - Dependabot now also watches `ci`, `ci/tools`, and the pre-commit hooks; gitleaks stays pinned with its checksum in the workflow.
+
 - 2026-10-22
   - Raised the required Go version to 1.27.3, which fixes GO-2026-6809: the standard library `crypto/x509` package now distrusts compromised intermediate certificates, and the exporter's TLS support called into the affected code.
   - Continuous integration (CI) now also runs on every push of `main` and every Monday, so new vulnerability advisories surface without a commit.
