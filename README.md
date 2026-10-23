@@ -53,6 +53,20 @@ wake a sleeping disk, and it skips enclosure devices that `smartctl
 --scan-open` lists. The device scan itself opens every device and may wake
 disks, so it runs only at start and every six hours.
 
+The SMART collector also reads each disk's self-test log, from the output it
+already fetches. For Advanced Technology Attachment (ATA) and NVM Express
+(NVMe) disks, `zfs_smart_self_test_passed` and
+`zfs_smart_self_test_age_seconds` describe the newest test of each `type`
+(`short`, `extended`, `conveyance`, `selective`, or `other`) that completed
+or failed; tests aborted by the host or a reset are skipped. The age is the
+device's power-on time since that test, so a disk that is powered off does not
+age. `zfs_smart_self_test_in_progress` is 1 while a test runs. A disk that has
+never run a self-test exports no self-test series, and a log holds a fixed
+number of tests (19 on the ATA disks used for the tests, 20 on the NVMe
+drive): with a daily short test, an extended test leaves the log after 19 days
+and its series goes with it. Alert on the newest test of any type, as
+`SmartSelfTestOverdue` in `examples/alerts.yml` does.
+
 `zfs_exporter_collector_up`, `zfs_exporter_collector_duration_seconds`, and
 `zfs_exporter_collector_last_success_timestamp_seconds` report the health of
 each collector. A failed run removes that collector's metrics until it next
@@ -150,6 +164,9 @@ is installed by the packages.
 | `zfs_smart_healthy` | gauge | `device` | Whether the SMART overall health self-assessment passed (1) or failed (0). |
 | `zfs_smart_power_cycles` | gauge | `device` | Device power cycle count. |
 | `zfs_smart_power_on_seconds` | gauge | `device` | Device power-on time. |
+| `zfs_smart_self_test_age_seconds` | gauge | `device`, `type` | Device power-on time since the latest conclusive self-test of the type. |
+| `zfs_smart_self_test_in_progress` | gauge | `device` | Whether the device is running a self-test (1) or not (0). |
+| `zfs_smart_self_test_passed` | gauge | `device`, `type` | Whether the latest conclusive self-test of the type passed (1) or failed (0); aborted tests are skipped. |
 | `zfs_smart_temperature_celsius` | gauge | `device` | Current device temperature. |
 | `zfs_vdev_allocated_bytes` | gauge | `pool`, `vdev`, `vdev_type`, `class`, `device`, `disk` | Space allocated on the vdev. |
 | `zfs_vdev_checksum_errors` | gauge | `pool`, `vdev`, `vdev_type`, `class`, `device`, `disk` | Checksum errors on the vdev since the last zpool clear. |
