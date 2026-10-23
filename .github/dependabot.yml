@@ -3,7 +3,6 @@ version: 2
 updates:
   - package-ecosystem: github-actions
     directory: /
-    target-branch: develop
     schedule:
       interval: weekly
     groups:
@@ -12,7 +11,6 @@ updates:
 
   - package-ecosystem: gomod
     directory: /
-    target-branch: develop
     schedule:
       interval: weekly
     groups:
@@ -21,7 +19,6 @@ updates:
 
   - package-ecosystem: gomod
     directory: /ci/tools
-    target-branch: develop
     schedule:
       interval: weekly
     groups:
@@ -30,7 +27,6 @@ updates:
 
   - package-ecosystem: pip
     directory: /ci
-    target-branch: develop
     schedule:
       interval: weekly
     groups:
@@ -39,7 +35,6 @@ updates:
 
   - package-ecosystem: pre-commit
     directory: /
-    target-branch: develop
     schedule:
       interval: weekly
     groups:

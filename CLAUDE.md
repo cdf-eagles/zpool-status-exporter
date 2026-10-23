@@ -57,20 +57,16 @@ repository and are not repeated here.
 
 ## Branches and releases
 
-- `main` and `develop`. Work branches use the prefixes `fix/`, `feat/`,
-  `major/`, `build/`, and `ignore/` and are squash merged into `develop` by
+- `main` only. Work branches use the prefixes `fix/`, `feat/`,
+  `major/`, `build/`, and `ignore/` and are squash merged into `main` by
   pull request. The prefix decides the version bump; `next-version.sh` reads
   it from each squash commit's pull request number with `gh`.
 - `scripts/next-version.sh` proposes the next version. A signed
-  `vX.Y.Z-rc.N` tag on `develop` builds and publishes a pre-release; release
+  `vX.Y.Z-rc.N` tag on a `main` commit builds and publishes a pre-release; release
   candidate artifacts carry the plain `X.Y.Z` version so they can be promoted
   unchanged.
-- Promotion: fast-forward `main` to the release candidate commit (no pull
-  request merge), then push a signed `vX.Y.Z` tag on the same commit. The
-  release workflow republishes the release candidate's files after checking
-  their checksums and attestations.
-- `ignore/`-only promotion: when every pull request since the last release
-  came from an `ignore/` branch, `main` may be fast-forwarded to `develop`
-  without a tag; `next-version.sh` detects this and prints the command. Any
-  other branch type since the last release (including `build/` and
-  `dependabot/`) blocks it until a release.
+- Promotion: push a signed `vX.Y.Z` tag on the release candidate's commit.
+  The release workflow republishes the release candidate's files after
+  checking their checksums and attestations.
+- `build/`, `dependabot/`, and `ignore/` pull requests do not bump the
+  version and ship with the next release.

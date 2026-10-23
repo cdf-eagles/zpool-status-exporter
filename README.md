@@ -202,26 +202,22 @@ step with the code; regenerate it with
 
 ## Releases
 
-Work is squash merged into `develop` through pull requests from `fix/`,
+Work is squash merged into `main` through pull requests from `fix/`,
 `feat/`, `major/`, `build/`, or `ignore/` branches. A release is cut from
-`develop`:
+`main`:
 
 1. `scripts/next-version.sh` proposes the next version from the branch
    prefixes of the pull requests merged since the last tag (it looks them up
    with the GitHub CLI, `gh`).
-2. A signed release candidate tag `vX.Y.Z-rc.N` on a `develop` commit builds
-   the binaries and the FreeBSD and RPM packages and publishes a pre-release.
-3. After the release candidate is proven, `main` is fast-forwarded to the
-   same commit and tagged `vX.Y.Z`. The release workflow publishes the release
-   candidate's own files, checked against their checksums, with build
-   provenance attestations.
+2. A signed release candidate tag `vX.Y.Z-rc.N` on a `main` commit builds the
+   binaries and the FreeBSD and RPM packages and publishes a pre-release.
+3. After the release candidate is proven, the same commit is tagged
+   `vX.Y.Z`. The release workflow publishes the release candidate's own
+   files, checked against their checksums, with build provenance
+   attestations.
 
-When every pull request merged since the last release came from an `ignore/`
-branch (documentation, examples, repository housekeeping), nothing that is
-packaged has changed: `scripts/next-version.sh` says so and prints the command
-that fast-forwards `main` to `develop` without a tag or release. A `build/` or
-`dependabot/` pull request can change what is built, so it waits for the next
-release.
+`build/`, `dependabot/`, and `ignore/` pull requests do not bump the version
+and ship with the next release.
 
 See `CHANGELOG.md` for changes.
 

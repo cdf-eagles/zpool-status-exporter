@@ -50,16 +50,16 @@ jobs:
             v[0-9]*.[0-9]*.[0-9]*-rc.[0-9]*)
               version=${TAG#v}; version=${version%-rc.*}
               case "$version" in *[!0-9.]*) echo "::error::unsupported tag $TAG"; exit 1 ;; esac
-              if ! git merge-base --is-ancestor "$sha" origin/develop; then
-                echo "::error::$TAG is not on develop"; exit 1
+              if ! git merge-base --is-ancestor "$sha" origin/main; then
+                echo "::error::$TAG is not on main"; exit 1
               fi
               { echo "kind=rc"; echo "version=$version"; echo "rc_tag=$TAG"; } >> "$GITHUB_OUTPUT"
               ;;
             v[0-9]*.[0-9]*.[0-9]*)
               version=${TAG#v}
               case "$version" in *[!0-9.]*) echo "::error::unsupported tag $TAG"; exit 1 ;; esac
-              if [ "$(git rev-parse origin/main)" != "$sha" ]; then
-                echo "::error::$TAG does not point at the head of main; fast-forward main to the release candidate first"; exit 1
+              if ! git merge-base --is-ancestor "$sha" origin/main; then
+                echo "::error::$TAG is not on main"; exit 1
               fi
               rc=$(git tag --points-at "$sha" --list "v${version}-rc.*" --sort=-version:refname | head -n 1)
               if [ -z "$rc" ]; then
