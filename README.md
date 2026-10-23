@@ -207,7 +207,12 @@ Continuous integration (CI) takes its tool versions from files Dependabot
 updates: the Python tools from `ci/requirements.txt`, actionlint and the
 golangci-lint version from `.pre-commit-config.yaml`, and govulncheck from
 `ci/tools/go.mod`, a separate module that stays out of the exporter's build.
-gitleaks is pinned with its checksum in `.github/workflows/ci.yaml`.
+gitleaks is pinned with its checksum in `.github/workflows/ci.yaml`, and the
+weekly run's Tool drift job opens an issue when it falls behind its latest
+release. The secret scan covers the history of the checked-out commit: on a
+pull request, `main` plus the pull request. `pre-commit install` also installs
+a push hook that runs gitleaks over the commits being pushed, so a commit that
+holds a secret is refused before it leaves the workstation.
 
 The tests run every collector against command output captured on a FreeBSD
 15.1 host (`internal/collector/testdata/freebsd`, with serial numbers, WWNs,

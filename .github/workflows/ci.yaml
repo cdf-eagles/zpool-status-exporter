@@ -30,6 +30,8 @@ jobs:
     steps:
       - name: Check out code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+        with:
+          persist-credentials: false
 
       - name: Set up Go
         uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e  # v7.0.0
@@ -94,6 +96,7 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
         with:
           fetch-depth: 0
+          persist-credentials: false
 
       - name: Require an unshallow clone
         run: test "$(git rev-parse --is-shallow-repository)" = false
@@ -108,8 +111,8 @@ jobs:
           tar -xzf "${RUNNER_TEMP}/${tarball}" -C "${RUNNER_TEMP}" gitleaks
           "${RUNNER_TEMP}/gitleaks" version
 
-      - name: Run gitleaks over the full history
-        run: '"${RUNNER_TEMP}/gitleaks" git --no-banner --redact --verbose .'
+      - name: Run gitleaks over the history of the checked-out commit
+        run: '"${RUNNER_TEMP}/gitleaks" git --no-banner --redact --verbose --log-opts="HEAD" .'
 
   test:
     name: Test and build
@@ -118,6 +121,8 @@ jobs:
     steps:
       - name: Check out code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+        with:
+          persist-credentials: false
 
       - name: Set up Go
         uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e  # v7.0.0
@@ -141,3 +146,11 @@ jobs:
           for os in freebsd linux; do
             CGO_ENABLED=0 GOOS="$os" GOARCH=amd64 go build -trimpath -o /dev/null ./cmd/zpool-status-exporter
           done
+
+  tool-drift:
+    name: Tool drift
+    if: github.event_name == 'schedule'
+    permissions:
+      contents: read
+      issues: write
+    uses: cdf-eagles/.github/.github/workflows/tool-drift.yaml@4f61e172889ba89b4b32a8ebdc798d432c507ba7  # v1.0.0
