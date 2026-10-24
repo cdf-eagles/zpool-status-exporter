@@ -1,5 +1,8 @@
 # Changelog
 
+- 2026-10-24
+  - The continuous integration (CI) secret scan downloads gitleaks 8.30.1, up from 8.21.2, verified by its checksum, and the download accepts only HTTPS with Transport Layer Security (TLS) 1.2 or later (`curl --proto "=https" --tlsv1.2`), so a redirect cannot drop it to plain HTTP. Found internally from backlog item 381.
+
 - 2026-10-23
   - The secret scan now covers the history of the checked-out commit (`--log-opts="HEAD"`), so a secret on another branch no longer fails every run; checkouts no longer keep their credentials.
   - A weekly Tool drift job opens an issue when the gitleaks pin falls behind its latest release, and a pre-commit push hook runs gitleaks over the commits being pushed.
