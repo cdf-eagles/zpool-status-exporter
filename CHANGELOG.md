@@ -1,5 +1,8 @@
 # Changelog
 
+- 2026-11-09
+  - The weekly Tool drift job calls the Tool drift workflow v1.1.0, which also checks the Go version in `go.mod` and opens an issue when a newer patch release of its line exists or the line reaches its end of life. Found internally from backlog item 382.
+
 - 2026-10-24
   - The continuous integration (CI) secret scan downloads gitleaks 8.30.1, up from 8.21.2, verified by its checksum, and the download accepts only HTTPS with Transport Layer Security (TLS) 1.2 or later (`curl --proto "=https" --tlsv1.2`), so a redirect cannot drop it to plain HTTP. Found internally from backlog item 381.
 
