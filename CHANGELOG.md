@@ -1,6 +1,7 @@
 # Changelog
 
 - 2026-11-12
+  - Updated the indirect dependencies golang.org/x/net to v0.62.0 and golang.org/x/crypto to v0.59.0 (with x/sync v0.25.0, x/sys v0.50.0, and x/text v0.44.0). The release binary links the code of three advisories that govulncheck reports in binary mode: GO-2026-6866 and GO-2026-6860 in `golang.org/x/net/html`, and GO-2026-5932 in `golang.org/x/crypto/openpgp`. The source scan finds none of them called by the exporter; the binary now scans clean in both modes. Found internally from backlog item 547.
   - Raised the required Go version to 1.27.4, which fixes GO-2026-6859 (CVE-2026-97054), a crash of HTTP/1 servers in the standard library `net/http` package; govulncheck reports the affected code as reachable from the exporter's metrics server. Found internally from backlog item 547.
   - A Snyk job in continuous integration (CI) tests the exporter's Go module dependencies on every pull request, every push of `main`, and the weekly run, and fails on any high or critical issue, a scan error, or a missing `SNYK_TOKEN` secret. The Snyk CLI 1.1308.4 is downloaded from its GitHub release and verified by its checksum. Found internally.
   - The README shows status badges for the CI workflow on `main`, the Release workflow, and CodeQL code scanning.
