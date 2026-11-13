@@ -1,5 +1,8 @@
 # Changelog
 
+- 2026-11-13
+  - The weekly Tool drift job calls the Tool drift workflow v1.1.1, which also checks the `SNYK_VERSION` pin against the latest Snyk CLI release and opens an issue when it falls behind. Found internally from backlog item 546.
+
 - 2026-11-12
   - Updated the indirect dependencies golang.org/x/net to v0.62.0 and golang.org/x/crypto to v0.59.0 (with x/sync v0.25.0, x/sys v0.50.0, and x/text v0.44.0). The release binary links the code of three advisories that govulncheck reports in binary mode: GO-2026-6866 and GO-2026-6860 in `golang.org/x/net/html`, and GO-2026-5932 in `golang.org/x/crypto/openpgp`. The source scan finds none of them called by the exporter; the binary now scans clean in both modes. Found internally from backlog item 547.
   - Raised the required Go version to 1.27.4, which fixes GO-2026-6859 (CVE-2026-97054), a crash of HTTP/1 servers in the standard library `net/http` package; govulncheck reports the affected code as reachable from the exporter's metrics server. Found internally from backlog item 547.
