@@ -21,6 +21,8 @@ concurrency:
 env:
   GITLEAKS_VERSION: 8.30.1
   GITLEAKS_SHA256: 551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb
+  SNYK_VERSION: 1.1308.4
+  SNYK_SHA256: 979172ee128903f50e43fff221f22a0689579f22c086dabaa0d1a5416485b9ba
 
 jobs:
   lint:
@@ -146,6 +148,46 @@ jobs:
           for os in freebsd linux; do
             CGO_ENABLED=0 GOOS="$os" GOARCH=amd64 go build -trimpath -o /dev/null ./cmd/zpool-status-exporter
           done
+
+  snyk:
+    name: Snyk
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Check out code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+        with:
+          persist-credentials: false
+
+      # The Snyk CLI reads the dependency graph with go list, so it needs the toolchain.
+      - name: Set up Go
+        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e  # v7.0.0
+        with:
+          go-version-file: go.mod
+
+      - name: Install the Snyk CLI
+        run: |
+          set -euo pipefail
+          curl --proto "=https" --tlsv1.2 -sSfL -o "${RUNNER_TEMP}/snyk" \
+            "https://github.com/snyk/cli/releases/download/v${SNYK_VERSION}/snyk-linux"
+          echo "${SNYK_SHA256}  ${RUNNER_TEMP}/snyk" | sha256sum -c -
+          chmod 755 "${RUNNER_TEMP}/snyk"
+          "${RUNNER_TEMP}/snyk" --version
+
+      # Fails on any high or critical issue in the exporter's module, on a scan
+      # error, and when no go.mod is found, so the required check fails closed.
+      # Dependabot pull requests read SNYK_TOKEN from the Dependabot secrets.
+      - name: Fail on high or critical dependency issues
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+          SNYK_DISABLE_ANALYTICS: 1
+        run: |
+          set -euo pipefail
+          if [ -z "${SNYK_TOKEN}" ]; then
+            echo "::error::SNYK_TOKEN is not set for this run"
+            exit 1
+          fi
+          "${RUNNER_TEMP}/snyk" test --file=go.mod --severity-threshold=high
 
   tool-drift:
     name: Tool drift

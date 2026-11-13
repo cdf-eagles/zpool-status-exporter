@@ -2,6 +2,8 @@
 
 - 2026-11-12
   - Raised the required Go version to 1.27.4, which fixes GO-2026-6859 (CVE-2026-97054), a crash of HTTP/1 servers in the standard library `net/http` package; govulncheck reports the affected code as reachable from the exporter's metrics server. Found internally from backlog item 547.
+  - A Snyk job in continuous integration (CI) tests the exporter's Go module dependencies on every pull request, every push of `main`, and the weekly run, and fails on any high or critical issue, a scan error, or a missing `SNYK_TOKEN` secret. The Snyk CLI 1.1308.4 is downloaded from its GitHub release and verified by its checksum. Found internally.
+  - The README shows status badges for the CI workflow on `main`, the Release workflow, and CodeQL code scanning.
 
 - 2026-11-09
   - The weekly Tool drift job calls the Tool drift workflow v1.1.0, which also checks the Go version in `go.mod` and opens an issue when a newer patch release of its line exists or the line reaches its end of life. Found internally from backlog item 382.

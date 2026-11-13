@@ -1,5 +1,9 @@
 # zpool-status-exporter
 
+[![CI](https://github.com/cdf-eagles/zpool-status-exporter/actions/workflows/ci.yaml/badge.svg?branch=main)](https://github.com/cdf-eagles/zpool-status-exporter/actions/workflows/ci.yaml?query=branch%3Amain)
+[![Release](https://github.com/cdf-eagles/zpool-status-exporter/actions/workflows/release.yaml/badge.svg)](https://github.com/cdf-eagles/zpool-status-exporter/actions/workflows/release.yaml)
+[![CodeQL](https://github.com/cdf-eagles/zpool-status-exporter/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/cdf-eagles/zpool-status-exporter/actions/workflows/github-code-scanning/codeql)
+
 A Prometheus exporter for ZFS. It reports pool and virtual device (vdev)
 health, capacity, errors, scrub and resilver progress, I/O rates and
 latencies, Adaptive Replacement Cache (ARC) and other kernel statistics,
@@ -213,6 +217,12 @@ release. The secret scan covers the history of the checked-out commit: on a
 pull request, `main` plus the pull request. `pre-commit install` also installs
 a push hook that runs gitleaks over the commits being pushed, so a commit that
 holds a secret is refused before it leaves the workstation.
+
+The Snyk job tests the exporter's module (`go.mod`) and fails on any high or
+critical dependency issue. It reads the `SNYK_TOKEN` secret, which is set both
+as an Actions secret and as a Dependabot secret, because Dependabot's pull
+requests cannot read Actions secrets. The Snyk CLI is pinned with its checksum
+in `.github/workflows/ci.yaml`.
 
 The tests run every collector against command output captured on a FreeBSD
 15.1 host (`internal/collector/testdata/freebsd`, with serial numbers, WWNs,
