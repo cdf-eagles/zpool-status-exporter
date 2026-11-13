@@ -1,5 +1,8 @@
 # Changelog
 
+- 2026-11-12
+  - Raised the required Go version to 1.27.4, which fixes GO-2026-6859 (CVE-2026-97054), a crash of HTTP/1 servers in the standard library `net/http` package; govulncheck reports the affected code as reachable from the exporter's metrics server. Found internally from backlog item 547.
+
 - 2026-11-09
   - The weekly Tool drift job calls the Tool drift workflow v1.1.0, which also checks the Go version in `go.mod` and opens an issue when a newer patch release of its line exists or the line reaches its end of life. Found internally from backlog item 382.
 
