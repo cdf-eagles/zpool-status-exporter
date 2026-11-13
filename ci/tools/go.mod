@@ -1,6 +1,6 @@
 module github.com/cdf-eagles/zpool-status-exporter/ci/tools
 
-go 1.27.3
+go 1.27.4
 
 tool golang.org/x/vuln/cmd/govulncheck
 
