@@ -224,6 +224,17 @@ as an Actions secret and as a Dependabot secret, because Dependabot's pull
 requests cannot read Actions secrets. The Snyk CLI is pinned with its checksum
 in `.github/workflows/ci.yaml`.
 
+The SonarCloud job runs the tests with a coverage profile (`coverage.out`),
+then sends the analysis and the coverage to SonarCloud with pysonar,
+configured by `sonar-project.properties`, and fails when the quality gate
+fails, which includes 80 percent coverage of new code. It reads its SonarCloud
+token from Amazon Web Services (AWS) Systems Manager Parameter Store through a
+role it assumes with the run's OpenID Connect (OIDC) token; the role's Amazon
+Resource Name (ARN) is the `AWS_SONARCLOUD_ROLE_ARN` secret. It runs on pushes
+to `main` and on pull requests from this repository's own branches; Dependabot
+and fork pull requests receive no OIDC token and skip it, and `main` is
+analysed when their change merges.
+
 The tests run every collector against command output captured on a FreeBSD
 15.1 host (`internal/collector/testdata/freebsd`, with serial numbers, WWNs,
 and pool GUIDs replaced). External commands go through the `runner.Runner`
