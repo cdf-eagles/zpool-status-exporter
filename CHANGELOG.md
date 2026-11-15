@@ -1,5 +1,8 @@
 # Changelog
 
+- 2026-11-15
+  - SonarCloud analyses the exporter from continuous integration (CI) instead of its automatic analysis, so the analysis now carries test coverage and the quality gate's coverage condition on new code applies. The new `SonarCloud` job runs pysonar, pinned in `ci/requirements.txt`, reading its token from Amazon Web Services (AWS) Systems Manager Parameter Store through OpenID Connect (OIDC). Found internally from backlog item 582.
+
 - 2026-11-14
   - Raised the indirect dependency github.com/klauspost/compress from v1.20.1 to v1.20.4, past CVE-2026-116591, two integer overflows in its `huff0` and `fse` packages fixed in v1.20.2. The module is in the module graph only through the tests of prometheus/client_golang; none of its packages is linked into the exporter, and builds for FreeBSD and Linux are byte-identical before and after. Found internally from backlog item 579.
 
