@@ -1,5 +1,8 @@
 # Changelog
 
+- 2026-11-14
+  - Raised the indirect dependency github.com/klauspost/compress from v1.20.1 to v1.20.4, past CVE-2026-116591, two integer overflows in its `huff0` and `fse` packages fixed in v1.20.2. The module is in the module graph only through the tests of prometheus/client_golang; none of its packages is linked into the exporter, and builds for FreeBSD and Linux are byte-identical before and after. Found internally from backlog item 579.
+
 - 2026-11-13
   - The weekly Tool drift job calls the Tool drift workflow v1.1.1, which also checks the `SNYK_VERSION` pin against the latest Snyk CLI release and opens an issue when it falls behind. Found internally from backlog item 546.
 
