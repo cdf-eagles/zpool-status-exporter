@@ -1,6 +1,7 @@
 # Changelog
 
 - 2026-11-14
+  - `go.mod` names Go 1.27.4 in a `toolchain` line and lowers its `go` line to 1.27.0. Snyk's GitHub integration reads `go.mod` with a Go older than 1.27.4 and failed every pull request check and import with "Failed to process go.mod" once the `go` line said 1.27.4; CI and releases still build with Go 1.27.4, which `setup-go` installs from the `toolchain` line. Found internally from backlog item 549.
   - Raised the indirect dependency github.com/klauspost/compress from v1.20.1 to v1.20.4, past CVE-2026-116591, two integer overflows in its `huff0` and `fse` packages fixed in v1.20.2. The module is in the module graph only through the tests of prometheus/client_golang; none of its packages is linked into the exporter, and builds for FreeBSD and Linux are byte-identical before and after. Found internally from backlog item 579.
 
 - 2026-11-13

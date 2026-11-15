@@ -1,6 +1,8 @@
 module github.com/cdf-eagles/zpool-status-exporter
 
-go 1.27.4
+go 1.27.0
+
+toolchain go1.27.4
 
 require (
 	github.com/alecthomas/kingpin/v2 v2.4.0

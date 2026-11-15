@@ -22,8 +22,11 @@ repository and are not repeated here.
   the README table with
   `UPDATE_README=1 go test ./internal/collector -run TestReadmeMetricTable`.
 - Libraries: `prometheus/client_golang`, `prometheus/common`,
-  `prometheus/exporter-toolkit`, and `alecthomas/kingpin/v2`. Keep `go.mod` on
-  the latest stable Go release.
+  `prometheus/exporter-toolkit`, and `alecthomas/kingpin/v2`. Keep the
+  `toolchain` line of `go.mod` on the latest stable Go release; CI and releases
+  build with it. The `go` line stays at the lowest release the code and its
+  dependencies need (`go 1.27.0`), because Snyk's GitHub integration reads
+  `go.mod` with its own, older Go and fails when the `go` line is newer.
 
 ## Tests
 
@@ -39,7 +42,8 @@ repository and are not repeated here.
   committed `.golangci.yml`, `go tool -modfile=ci/tools/go.mod govulncheck ./...`,
   `shellcheck -s sh` on every shell script, `yamllint .`, `actionlint`, and
   `pre-commit run --all-files`.
-  golangci-lint must be built with the Go version in `go.mod`.
+  golangci-lint must be built with the Go version of the `toolchain` line in
+  `go.mod`.
 - CI tool versions live in `ci/requirements.txt`, `.pre-commit-config.yaml`,
   and `ci/tools/go.mod`, where Dependabot updates them; never pin one in a
   workflow `env:` block unless it is a release download verified by checksum.
