@@ -243,6 +243,26 @@ interface, so tests use `runner.Fake`, and the `runner.Exec` tests replace
 step with the code; regenerate it with
 `UPDATE_README=1 go test ./internal/collector -run TestReadmeMetricTable`.
 
+Benchmarks in `internal/collector/bench_test.go` run each collector, a
+scrape, and the parsers over the same captured output. Compare a change with
+benchstat (`go install golang.org/x/perf/cmd/benchstat@latest`), which reports
+whether a difference is statistically significant:
+
+```sh
+go test ./internal/collector -run '^$' -bench . -benchmem -count 10 > /tmp/old.txt
+# apply the change, then:
+go test ./internal/collector -run '^$' -bench . -benchmem -count 10 > /tmp/new.txt
+benchstat /tmp/old.txt /tmp/new.txt
+```
+
+Add `-cpuprofile cpu.prof -memprofile mem.prof` to one benchmark and open the
+profiles with `go tool pprof` to see where the time and the allocations go.
+The hand-written `sysctl` line parsers are held to the regular expressions
+they replaced by fuzz tests; run one for longer with
+`go test ./internal/collector -run '^$' -fuzz '^FuzzSysctlLine$' -fuzztime 1m`.
+A failing input is written under `internal/collector/testdata/fuzz`; commit it
+with the fix so the test keeps it.
+
 ## Releases
 
 Work is squash merged into `main` through pull requests from `fix/`,
