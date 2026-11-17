@@ -14,7 +14,7 @@ import (
 	"github.com/cdf-eagles/zpool-status-exporter/internal/runner"
 )
 
-func fixture(t *testing.T, name string) string {
+func fixture(t testing.TB, name string) string {
 	t.Helper()
 	data, err := os.ReadFile(filepath.Join("testdata", name))
 	if err != nil {
@@ -49,7 +49,7 @@ const smallScan = "/dev/ses0 -d atacam # /dev/ses0, ATA device\n" +
 
 // freebsdFake answers every command the collectors run with output captured
 // on a FreeBSD 15.1 host (serial numbers, WWNs, and GUIDs replaced).
-func freebsdFake(t *testing.T) *runner.Fake {
+func freebsdFake(t testing.TB) *runner.Fake {
 	t.Helper()
 	return runner.NewFake(map[string]runner.Response{
 		cmdStatus:   {Stdout: fixture(t, "freebsd/zpool-status.json")},

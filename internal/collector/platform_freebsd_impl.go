@@ -1,12 +1,9 @@
 package collector
 
 import (
-	"bufio"
-	"bytes"
 	"context"
 	"errors"
 	"fmt"
-	"regexp"
 	"strconv"
 	"strings"
 
@@ -58,9 +55,8 @@ func (p *FreeBSDPlatform) Devices(ctx context.Context) (DeviceMap, error) {
 
 func parseGlabelStatus(data []byte) map[string]string {
 	labels := map[string]string{}
-	sc := bufio.NewScanner(bytes.NewReader(data))
-	for sc.Scan() {
-		f := strings.Fields(sc.Text())
+	for line := range lines(data) {
+		f := strings.Fields(line)
 		if len(f) < 3 || (f[0] == "Name" && f[1] == "Status") {
 			continue
 		}
@@ -77,10 +73,8 @@ func parseGeomDiskList(data []byte) map[string]Disk {
 			disks[cur.Name] = *cur
 		}
 	}
-	sc := bufio.NewScanner(bytes.NewReader(data))
-	for sc.Scan() {
-		line := strings.TrimSpace(sc.Text())
-		key, value, ok := strings.Cut(line, ":")
+	for line := range lines(data) {
+		key, value, ok := strings.Cut(strings.TrimSpace(line), ":")
 		if !ok {
 			continue
 		}
@@ -134,11 +128,85 @@ func (p *FreeBSDPlatform) Kstats(ctx context.Context) (KstatSnapshot, error) {
 	return snap, nil
 }
 
-var (
-	sysctlMisc    = regexp.MustCompile(`^kstat\.zfs\.misc\.([A-Za-z0-9_]+)\.([A-Za-z0-9_-]+): (.*)$`)
-	sysctlIOStats = regexp.MustCompile(`^kstat\.zfs\.(.+)\.misc\.iostats\.([A-Za-z0-9_-]+): (.*)$`)
-	sysctlObjset  = regexp.MustCompile(`^kstat\.zfs\.(.+)\.dataset\.(objset-0x[0-9a-fA-F]+)\.([A-Za-z0-9_-]+): (.*)$`)
+const (
+	groupChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_"
+	statChars  = groupChars + "-"
+	hexChars   = "0123456789ABCDEFabcdef"
 )
+
+// only reports whether s is not empty and holds only bytes from chars.
+func only(s, chars string) bool { return s != "" && strings.Trim(s, chars) == "" }
+
+// cutStat splits "<statistic>: <value>".
+func cutStat(s string) (stat, value string, ok bool) {
+	stat, value, ok = strings.Cut(s, ": ")
+	return stat, value, ok && only(stat, statChars)
+}
+
+// sysctlMisc splits "kstat.zfs.misc.<group>.<statistic>: <value>".
+func sysctlMisc(line string) (group, stat, value string, ok bool) {
+	rest, ok := strings.CutPrefix(line, "kstat.zfs.misc.")
+	if ok {
+		group, rest, ok = strings.Cut(rest, ".")
+	}
+	if !ok || !only(group, groupChars) {
+		return "", "", "", false
+	}
+	stat, value, ok = cutStat(rest)
+	return group, stat, value, ok
+}
+
+// cutPool splits "kstat.zfs.<pool><sep><tail>" at the last sep for which
+// valid(tail) holds.
+func cutPool(line, sep string, valid func(tail string) bool) (pool string, ok bool) {
+	rest, ok := strings.CutPrefix(line, "kstat.zfs.")
+	if !ok {
+		return "", false
+	}
+	for end := len(rest); ; {
+		i := strings.LastIndex(rest[:end], sep)
+		if i <= 0 {
+			return "", false
+		}
+		if valid(rest[i+len(sep):]) {
+			return rest[:i], true
+		}
+		// The next search keeps all but the last byte of this separator,
+		// because separators can overlap.
+		end = i + len(sep) - 1
+	}
+}
+
+// sysctlIOStats splits "kstat.zfs.<pool>.misc.iostats.<statistic>: <value>".
+func sysctlIOStats(line string) (pool, stat, value string, ok bool) {
+	pool, ok = cutPool(line, ".misc.iostats.", func(tail string) bool {
+		stat, value, ok = cutStat(tail)
+		return ok
+	})
+	if !ok {
+		return "", "", "", false
+	}
+	return pool, stat, value, true
+}
+
+// sysctlObjset splits
+// "kstat.zfs.<pool>.dataset.objset-0x<hex>.<statistic>: <value>".
+func sysctlObjset(line string) (pool, objset, stat, value string, ok bool) {
+	pool, ok = cutPool(line, ".dataset.", func(tail string) bool {
+		var rest string
+		objset, rest, ok = strings.Cut(tail, ".")
+		hex, isObjset := strings.CutPrefix(objset, "objset-0x")
+		if !ok || !isObjset || !only(hex, hexChars) {
+			return false
+		}
+		stat, value, ok = cutStat(rest)
+		return ok
+	})
+	if !ok {
+		return "", "", "", "", false
+	}
+	return pool, objset, stat, value, true
+}
 
 func parseSysctlKstats(data []byte) KstatSnapshot {
 	snap := KstatSnapshot{Misc: map[string]map[string]float64{}}
@@ -151,44 +219,43 @@ func parseSysctlKstats(data []byte) KstatSnapshot {
 		if p, ok := pools[name]; ok {
 			return p
 		}
+		name = strings.Clone(name)
 		p := &PoolKstats{Pool: name, IOStats: map[string]float64{}}
 		pools[name] = p
 		poolOrder = append(poolOrder, name)
 		return p
 	}
 
-	sc := bufio.NewScanner(bytes.NewReader(data))
-	sc.Buffer(make([]byte, 0, 64*1024), 1024*1024)
-	for sc.Scan() {
-		line := sc.Text()
-		if m := sysctlMisc.FindStringSubmatch(line); m != nil {
-			if v, err := strconv.ParseFloat(m[3], 64); err == nil {
-				if snap.Misc[m[1]] == nil {
-					snap.Misc[m[1]] = map[string]float64{}
+	for line := range lines(data) {
+		if group, stat, value, ok := sysctlMisc(line); ok {
+			if v, err := strconv.ParseFloat(value, 64); err == nil {
+				if snap.Misc[group] == nil {
+					snap.Misc[group] = map[string]float64{}
 				}
-				snap.Misc[m[1]][m[2]] = v
+				snap.Misc[group][stat] = v
 			}
 			continue
 		}
-		if m := sysctlIOStats.FindStringSubmatch(line); m != nil {
-			if v, err := strconv.ParseFloat(m[3], 64); err == nil {
-				pool(m[1]).IOStats[m[2]] = v
+		if name, stat, value, ok := sysctlIOStats(line); ok {
+			if v, err := strconv.ParseFloat(value, 64); err == nil {
+				pool(name).IOStats[stat] = v
 			}
 			continue
 		}
-		if m := sysctlObjset.FindStringSubmatch(line); m != nil {
-			k := objKey{m[1], m[2]}
+		if name, objset, stat, value, ok := sysctlObjset(line); ok {
+			k := objKey{name, objset}
 			ds, ok := objsets[k]
 			if !ok {
 				ds = &DatasetKstats{Stats: map[string]float64{}}
+				p := pool(name)
+				k.pool = p.Pool
 				objsets[k] = ds
 				objOrder = append(objOrder, k)
-				pool(m[1])
 			}
-			if m[3] == "dataset_name" {
-				ds.Name = m[4]
-			} else if v, err := strconv.ParseFloat(m[4], 64); err == nil {
-				ds.Stats[m[3]] = v
+			if stat == "dataset_name" {
+				ds.Name = strings.Clone(value)
+			} else if v, err := strconv.ParseFloat(value, 64); err == nil {
+				ds.Stats[stat] = v
 			}
 		}
 	}

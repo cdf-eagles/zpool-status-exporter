@@ -1,8 +1,6 @@
 package collector
 
 import (
-	"bufio"
-	"bytes"
 	"context"
 	"encoding/json"
 	"errors"
@@ -90,9 +88,8 @@ var nvmeController = regexp.MustCompile(`^nvme[0-9]+$`)
 // Enclosure devices (ses) are listed by smartctl but are not disks.
 func parseScanOpen(data []byte, disks map[string]Disk) []smartTarget {
 	var out []smartTarget
-	sc := bufio.NewScanner(bytes.NewReader(data))
-	for sc.Scan() {
-		line := strings.TrimSpace(sc.Text())
+	for line := range lines(data) {
+		line = strings.TrimSpace(line)
 		if !strings.HasPrefix(line, "/dev/") {
 			continue
 		}
@@ -118,10 +115,11 @@ func dedupeTargets(in []smartTarget) []smartTarget {
 	seen := map[string]bool{}
 	out := in[:0]
 	for _, t := range in {
-		if seen[t.label()] {
+		label := t.label()
+		if seen[label] {
 			continue
 		}
-		seen[t.label()] = true
+		seen[label] = true
 		out = append(out, t)
 	}
 	return out
@@ -310,10 +308,9 @@ func (j *smartJob) collectDevice(ctx context.Context, b *batch, t smartTarget, d
 		return
 	}
 	if s.SerialNumber != "" || s.ModelName != "" {
-		disk := ""
-		if _, ok := devices.Disks[path.Base(t.path)]; ok {
-			disk = path.Base(t.path)
-		} else if d, ok := devices.DiskBySerial(s.SerialNumber); ok {
+		disk := path.Base(t.path)
+		if _, ok := devices.Disks[disk]; !ok {
+			d, _ := devices.DiskBySerial(s.SerialNumber)
 			disk = d.Name
 		}
 		b.add(smartInfo, 1, device, disk, s.ModelName, s.SerialNumber, s.wwn(), s.FirmwareVersion, s.Device.Protocol)

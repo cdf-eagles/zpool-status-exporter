@@ -1,9 +1,6 @@
 package collector
 
-import (
-	"math"
-	"sort"
-)
+import "math"
 
 var (
 	smartSelfTestPassed = gauge("smart_self_test_passed",
@@ -195,12 +192,7 @@ func addSelfTests(b *batch, device string, s *smartJSON) {
 			latest[e.typ] = e
 		}
 	}
-	types := make([]string, 0, len(latest))
-	for typ := range latest {
-		types = append(types, typ)
-	}
-	sort.Strings(types)
-	for _, typ := range types {
+	for _, typ := range sortedKeys(latest) {
 		e := latest[typ]
 		b.addBool(smartSelfTestPassed, e.passed, device, typ)
 		if e.hasAge {

@@ -28,19 +28,18 @@ var (
 		return m
 	}()
 
-	datasetReads     = counter("dataset_reads_total", "Read operations on the dataset.", "pool", "dataset")
-	datasetWrites    = counter("dataset_writes_total", "Write operations on the dataset.", "pool", "dataset")
-	datasetReadB     = counter("dataset_read_bytes_total", "Bytes read from the dataset.", "pool", "dataset")
-	datasetWrittenB  = counter("dataset_written_bytes_total", "Bytes written to the dataset.", "pool", "dataset")
-	datasetUnlinks   = counter("dataset_unlinks_total", "Files queued for deletion on the dataset.", "pool", "dataset")
-	datasetUnlinked  = counter("dataset_unlinked_total", "Files deleted on the dataset.", "pool", "dataset")
-	datasetCounterOf = map[string]*MetricDef{
-		"reads":     datasetReads,
-		"writes":    datasetWrites,
-		"nread":     datasetReadB,
-		"nwritten":  datasetWrittenB,
-		"nunlinks":  datasetUnlinks,
-		"nunlinked": datasetUnlinked,
+	// datasetCounters maps objset statistics to their metrics, sorted by
+	// statistic.
+	datasetCounters = [...]struct {
+		stat string
+		def  *MetricDef
+	}{
+		{"nread", counter("dataset_read_bytes_total", "Bytes read from the dataset.", "pool", "dataset")},
+		{"nunlinked", counter("dataset_unlinked_total", "Files deleted on the dataset.", "pool", "dataset")},
+		{"nunlinks", counter("dataset_unlinks_total", "Files queued for deletion on the dataset.", "pool", "dataset")},
+		{"nwritten", counter("dataset_written_bytes_total", "Bytes written to the dataset.", "pool", "dataset")},
+		{"reads", counter("dataset_reads_total", "Read operations on the dataset.", "pool", "dataset")},
+		{"writes", counter("dataset_writes_total", "Write operations on the dataset.", "pool", "dataset")},
 	}
 )
 
@@ -56,6 +55,7 @@ func (j *arcJob) Collect(ctx context.Context) ([]prometheus.Metric, error) {
 	}
 	var b batch
 	stats := snap.Misc["arcstats"]
+	b.grow(len(stats))
 	for _, name := range sortedKeys(stats) {
 		b.addDynamic(arcFamily, name, prometheus.UntypedValue, stats[name])
 	}
@@ -76,23 +76,25 @@ func (j *kstatJob) Collect(ctx context.Context) ([]prometheus.Metric, error) {
 	var b batch
 	for _, group := range kstatMiscGroups {
 		stats := snap.Misc[group]
+		b.grow(len(stats))
 		for _, name := range sortedKeys(stats) {
 			b.addDynamic(kstatFamilies[group], name, prometheus.UntypedValue, stats[name])
 		}
 	}
 	for _, p := range snap.Pools {
+		b.grow(len(p.IOStats) + len(p.Datasets)*len(datasetCounters))
 		for _, name := range sortedKeys(p.IOStats) {
 			b.addDynamic(poolIOFamily, name, prometheus.CounterValue, p.IOStats[name], p.Pool)
 		}
-		seen := map[string]bool{}
+		seen := make(map[string]bool, len(p.Datasets))
 		for _, ds := range p.Datasets {
 			if seen[ds.Name] {
 				continue
 			}
 			seen[ds.Name] = true
-			for _, stat := range sortedKeys(datasetCounterOf) {
-				if v, ok := ds.Stats[stat]; ok {
-					b.add(datasetCounterOf[stat], v, p.Pool, ds.Name)
+			for _, c := range datasetCounters {
+				if v, ok := ds.Stats[c.stat]; ok {
+					b.add(c.def, v, p.Pool, ds.Name)
 				}
 			}
 		}

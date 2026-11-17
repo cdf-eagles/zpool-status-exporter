@@ -34,6 +34,10 @@ repository and are not repeated here.
   fixtures from an assumed format; Linux fixtures are the documented
   exception until a Linux host is available.
 - A new test must fail against the code before the fix.
+- A change made for speed or memory is measured with the benchmarks in
+  `internal/collector/bench_test.go`: `-benchmem -count 10` before and after,
+  compared with benchstat. A parser rewritten for speed keeps a test that
+  holds it to the parser it replaced.
 - Gates before staging: `go test -race ./...` (coverage at least 90 percent),
   `golangci-lint run ./...` for `GOOS=linux` and `GOOS=freebsd` with the
   committed `.golangci.yml`, `go tool -modfile=ci/tools/go.mod govulncheck ./...`,

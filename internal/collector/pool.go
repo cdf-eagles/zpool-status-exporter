@@ -113,8 +113,20 @@ type listOutput struct {
 
 type listPool struct {
 	Name       string                     `json:"name"`
-	Properties map[string]listProperty    `json:"properties"`
+	Properties listPoolProps              `json:"properties"`
 	Vdevs      map[string]json.RawMessage `json:"vdevs"`
+}
+
+// listPoolProps holds the pool properties the exporter reads.
+type listPoolProps struct {
+	Size          listProperty `json:"size"`
+	Allocated     listProperty `json:"allocated"`
+	Free          listProperty `json:"free"`
+	Fragmentation listProperty `json:"fragmentation"`
+	Capacity      listProperty `json:"capacity"`
+	DedupRatio    listProperty `json:"dedupratio"`
+	ExpandSize    listProperty `json:"expandsize"`
+	Checkpoint    listProperty `json:"checkpoint"`
 }
 
 type listProperty struct {
@@ -123,8 +135,13 @@ type listProperty struct {
 
 type listVdev struct {
 	Name       string                     `json:"name"`
-	Properties map[string]listProperty    `json:"properties"`
+	Properties listVdevProps              `json:"properties"`
 	Vdevs      map[string]json.RawMessage `json:"vdevs"`
+}
+
+// listVdevProps holds the vdev property the exporter reads.
+type listVdevProps struct {
+	Fragmentation listProperty `json:"fragmentation"`
 }
 
 func parseStatus(data []byte) (statusOutput, error) {
@@ -155,10 +172,10 @@ func parseList(data []byte) (listOutput, error) {
 	return out, nil
 }
 
-// listVdevProps flattens the vdev tree of zpool list -j into properties by
+// listVdevFrag flattens the vdev tree of zpool list -j into fragmentation by
 // vdev name. Allocation-class groups (logs, l2cache, ...) have no name and
 // hold their vdevs directly.
-func listVdevProps(raw map[string]json.RawMessage, into map[string]map[string]listProperty) error {
+func listVdevFrag(raw map[string]json.RawMessage, into map[string]flexNum) error {
 	for key, msg := range raw {
 		var v listVdev
 		if err := json.Unmarshal(msg, &v); err != nil {
@@ -169,13 +186,13 @@ func listVdevProps(raw map[string]json.RawMessage, into map[string]map[string]li
 			if err := json.Unmarshal(msg, &group); err != nil {
 				return fmt.Errorf("vdev group %q: %w", key, err)
 			}
-			if err := listVdevProps(group, into); err != nil {
+			if err := listVdevFrag(group, into); err != nil {
 				return err
 			}
 			continue
 		}
-		into[v.Name] = v.Properties
-		if err := listVdevProps(v.Vdevs, into); err != nil {
+		into[v.Name] = v.Properties.Fragmentation.Value
+		if err := listVdevFrag(v.Vdevs, into); err != nil {
 			return err
 		}
 	}
@@ -360,6 +377,7 @@ func (j *poolJob) Collect(ctx context.Context) ([]prometheus.Metric, error) {
 	}
 
 	var b batch
+	b.grow(len(devices.Disks))
 	for _, name := range sortedKeys(devices.Disks) {
 		d := devices.Disks[name]
 		b.add(diskInfo, 1, name, d.Model, d.Serial, d.WWN)
@@ -368,89 +386,73 @@ func (j *poolJob) Collect(ctx context.Context) ([]prometheus.Metric, error) {
 		p := st.Pools[name]
 		lp := ls.Pools[name]
 		emitPool(&b, name, p, lp)
-		vprops := map[string]map[string]listProperty{}
-		if err := listVdevProps(lp.Vdevs, vprops); err != nil {
+		frag := map[string]flexNum{}
+		if err := listVdevFrag(lp.Vdevs, frag); err != nil {
 			return nil, fmt.Errorf("pool %s: %w", name, err)
 		}
 		for _, v := range flattenPool(p) {
-			info := topo[name][v.Name]
-			emitVdev(&b, name, v, info, vprops[v.Name])
+			emitVdev(&b, name, v, topo[name][v.Name], frag[v.Name])
 		}
 	}
 	return b.metrics, b.err()
 }
 
-func emitPool(b *batch, name string, p statusPool, lp listPool) {
-	states := poolStates
-	if !slices.Contains(states, p.State) && p.State != "" {
-		states = append(slices.Clone(states), p.State)
+// statesWith returns the known states, with state added when it is not one
+// of them.
+func statesWith(state string) []string {
+	if state == "" || slices.Contains(poolStates, state) {
+		return poolStates
 	}
-	for _, s := range states {
+	return append(slices.Clone(poolStates), state)
+}
+
+func emitPool(b *batch, name string, p statusPool, lp listPool) {
+	for _, s := range statesWith(p.State) {
 		b.addBool(poolState, s == p.State, name, s)
 	}
-	addProp := func(d *MetricDef, key string, divisor float64) {
-		if prop, ok := lp.Properties[key]; ok && prop.Value.Valid {
-			b.add(d, prop.Value.Value/divisor, name)
-		}
-	}
-	addProp(poolSize, "size", 1)
-	addProp(poolAllocated, "allocated", 1)
-	addProp(poolFree, "free", 1)
-	addProp(poolFrag, "fragmentation", 100)
-	addProp(poolCapacity, "capacity", 100)
-	addProp(poolDedup, "dedupratio", 1)
-	addProp(poolExpand, "expandsize", 1)
-	addProp(poolCheckpt, "checkpoint", 1)
-	if p.ErrorCount.Valid {
-		b.add(poolErrors, p.ErrorCount.Value, name)
-	}
+	props := lp.Properties
+	b.addNum(poolSize, props.Size.Value, name)
+	b.addNum(poolAllocated, props.Allocated.Value, name)
+	b.addNum(poolFree, props.Free.Value, name)
+	b.addNum(poolFrag, props.Fragmentation.Value.div(100), name)
+	b.addNum(poolCapacity, props.Capacity.Value.div(100), name)
+	b.addNum(poolDedup, props.DedupRatio.Value, name)
+	b.addNum(poolExpand, props.ExpandSize.Value, name)
+	b.addNum(poolCheckpt, props.Checkpoint.Value, name)
+	b.addNum(poolErrors, p.ErrorCount, name)
 	b.addBool(poolAttention, p.Status != "", name)
 
 	if s := p.ScanStats; s != nil && s.Function != "" {
 		b.add(scanState, 1, name, s.Function, s.State)
-		addNum := func(d *MetricDef, n flexNum) {
-			if n.Valid {
-				b.add(d, n.Value, name)
-			}
+		b.addNum(scanStart, s.StartTime, name)
+		if s.State == "FINISHED" && s.EndTime.Value > 0 {
+			b.addNum(scanEnd, s.EndTime, name)
 		}
-		addNum(scanStart, s.StartTime)
-		if s.State == "FINISHED" && s.EndTime.Valid && s.EndTime.Value > 0 {
-			b.add(scanEnd, s.EndTime.Value, name)
-		}
-		addNum(scanToExamine, s.ToExamine)
-		addNum(scanExamined, s.Examined)
-		addNum(scanIssued, s.Issued)
-		addNum(scanProcessed, s.Processed)
-		addNum(scanErrors, s.Errors)
+		b.addNum(scanToExamine, s.ToExamine, name)
+		b.addNum(scanExamined, s.Examined, name)
+		b.addNum(scanIssued, s.Issued, name)
+		b.addNum(scanProcessed, s.Processed, name)
+		b.addNum(scanErrors, s.Errors, name)
 		b.addBool(scanPaused, s.ScrubPause.Valid && s.ScrubPause.Value != 0, name)
 	}
 }
 
-func emitVdev(b *batch, pool string, v flatVdev, info vdevInfo, props map[string]listProperty) {
-	labels := []string{pool, v.Name, v.VdevType, v.class, info.Device, info.Disk}
-	states := poolStates
-	if !slices.Contains(states, v.State) && v.State != "" {
-		states = append(slices.Clone(states), v.State)
+func emitVdev(b *batch, pool string, v flatVdev, info vdevInfo, frag flexNum) {
+	withState := [...]string{pool, v.Name, v.VdevType, v.class, info.Device, info.Disk, ""}
+	labels := withState[:len(vdevLabels)]
+	for _, s := range statesWith(v.State) {
+		withState[len(vdevLabels)] = s
+		b.addBool(vdevState, s == v.State, withState[:]...)
 	}
-	for _, s := range states {
-		b.addBool(vdevState, s == v.State, append(slices.Clone(labels), s)...)
+	b.addNum(vdevReadErrors, v.ReadErrors, labels...)
+	b.addNum(vdevWriteErrors, v.WriteErrors, labels...)
+	b.addNum(vdevChecksumErrors, v.ChecksumErrors, labels...)
+	b.addNum(vdevSlowIOs, v.SlowIOs, labels...)
+	b.addNum(vdevAllocated, v.AllocSpace, labels...)
+	size := v.PhysSpace
+	if !size.Valid {
+		size = v.TotalSpace
 	}
-	addNum := func(d *MetricDef, n flexNum) {
-		if n.Valid {
-			b.add(d, n.Value, labels...)
-		}
-	}
-	addNum(vdevReadErrors, v.ReadErrors)
-	addNum(vdevWriteErrors, v.WriteErrors)
-	addNum(vdevChecksumErrors, v.ChecksumErrors)
-	addNum(vdevSlowIOs, v.SlowIOs)
-	addNum(vdevAllocated, v.AllocSpace)
-	if v.PhysSpace.Valid {
-		b.add(vdevSize, v.PhysSpace.Value, labels...)
-	} else {
-		addNum(vdevSize, v.TotalSpace)
-	}
-	if prop, ok := props["fragmentation"]; ok && prop.Value.Valid {
-		b.add(vdevFrag, prop.Value.Value/100, labels...)
-	}
+	b.addNum(vdevSize, size, labels...)
+	b.addNum(vdevFrag, frag.div(100), labels...)
 }

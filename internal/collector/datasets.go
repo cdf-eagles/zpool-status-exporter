@@ -1,8 +1,6 @@
 package collector
 
 import (
-	"bufio"
-	"bytes"
 	"context"
 	"strings"
 
@@ -15,7 +13,7 @@ var datasetLabels = []string{"pool", "dataset", "type"}
 
 // datasetProperties maps zfs get properties to their metrics, in the order
 // they are requested.
-var datasetProperties = []struct {
+var datasetProperties = [...]struct {
 	prop string
 	def  *MetricDef
 }{
@@ -46,28 +44,51 @@ func datasetPropertyList() string {
 	return strings.Join(props, ",")
 }
 
+// datasetPropertyIndex maps a property to its place in datasetProperties.
+var datasetPropertyIndex = func() map[string]int {
+	m := make(map[string]int, len(datasetProperties))
+	for i, p := range datasetProperties {
+		m[p.prop] = i
+	}
+	return m
+}()
+
+// datasetValues holds one dataset's type and its properties in the order of
+// datasetProperties.
 type datasetValues struct {
-	name  string
-	props map[string]string
+	name   string
+	typ    string
+	values [len(datasetProperties)]flexNum
 }
 
+// parseZfsGet reads the name, property, and value columns of zfs get -Hp.
 func parseZfsGet(data []byte) []datasetValues {
 	var out []datasetValues
 	index := map[string]int{}
-	sc := bufio.NewScanner(bytes.NewReader(data))
-	sc.Buffer(make([]byte, 0, 64*1024), 1024*1024)
-	for sc.Scan() {
-		f := strings.Split(sc.Text(), "\t")
-		if len(f) < 3 {
+	for line := range lines(data) {
+		name, rest, ok := strings.Cut(line, "\t")
+		if !ok {
 			continue
 		}
-		i, ok := index[f[0]]
+		prop, value, ok := strings.Cut(rest, "\t")
 		if !ok {
-			i = len(out)
-			index[f[0]] = i
-			out = append(out, datasetValues{name: f[0], props: map[string]string{}})
+			continue
 		}
-		out[i].props[f[1]] = f[2]
+		value, _, _ = strings.Cut(value, "\t")
+		i := len(out) - 1
+		if i < 0 || out[i].name != name {
+			if i, ok = index[name]; !ok {
+				i = len(out)
+				name = strings.Clone(name)
+				index[name] = i
+				out = append(out, datasetValues{name: name})
+			}
+		}
+		if p, ok := datasetPropertyIndex[prop]; ok {
+			out[i].values[p] = parseFlex(value)
+		} else if prop == "type" {
+			out[i].typ = strings.Clone(value)
+		}
 	}
 	return out
 }
@@ -86,14 +107,14 @@ func (j *datasetJob) Collect(ctx context.Context) ([]prometheus.Metric, error) {
 	if err != nil {
 		return nil, err
 	}
+	datasets := parseZfsGet(res.Stdout)
 	var b batch
-	for _, ds := range parseZfsGet(res.Stdout) {
+	b.grow(len(datasets) * len(datasetProperties))
+	for _, ds := range datasets {
 		pool, _, _ := strings.Cut(ds.name, "/")
-		labels := []string{pool, ds.name, ds.props["type"]}
-		for _, p := range datasetProperties {
-			if n := parseFlex(ds.props[p.prop]); n.Valid {
-				b.add(p.def, n.Value, labels...)
-			}
+		labels := []string{pool, ds.name, ds.typ}
+		for i, p := range datasetProperties {
+			b.addNum(p.def, ds.values[i], labels...)
 		}
 	}
 	return b.metrics, b.err()
