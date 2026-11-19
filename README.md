@@ -218,8 +218,9 @@ pull request, `main` plus the pull request. `pre-commit install` also installs
 a push hook that runs gitleaks over the commits being pushed, so a commit that
 holds a secret is refused before it leaves the workstation.
 
-The Snyk job tests the exporter's module (`go.mod`) and fails on any high or
-critical dependency issue. It reads the `SNYK_TOKEN` secret, which is set both
+The Snyk job tests the exporter's module (`go.mod`) and the Python tools
+pinned in `ci/requirements.txt`, and fails on any high or critical dependency
+issue. It reads the `SNYK_TOKEN` secret, which is set both
 as an Actions secret and as a Dependabot secret, because Dependabot's pull
 requests cannot read Actions secrets. The Snyk CLI is pinned with its checksum
 in `.github/workflows/ci.yaml`.

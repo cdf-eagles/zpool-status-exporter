@@ -1,5 +1,7 @@
 # Changelog
 
+- 2026-11-18
+  - The Snyk job also tests the Python tools pinned in `ci/requirements.txt`, which Snyk's repository import skips, and fails on any high or critical issue there. Found internally from backlog item 572.
 - 2026-11-17
   - The collectors use less processor time and memory for the same metrics: over the captured FreeBSD output, one run of every collector takes about 66 percent less time and allocates about 31 percent less memory. The `sysctl` kernel statistic lines are parsed without regular expressions, the descriptors of the kernel statistic and NVM Express (NVMe) metric families are built once instead of on every collection, and `zfs get` and `zpool list` output is read into fixed fields instead of maps.
   - A line of command output longer than 64 kibibytes (1 mebibyte for `sysctl` and `zfs get`) is now parsed instead of ending that collector's parse early. A malformed `zpool list` property that the exporter does not read no longer fails the pool collector.
