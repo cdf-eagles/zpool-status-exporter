@@ -165,6 +165,13 @@ jobs:
         with:
           go-version-file: go.mod
 
+      # The Snyk CLI reads the CI tools' dependency tree from the installed packages.
+      - name: Install the Python tools
+        run: |
+          set -euo pipefail
+          python3 -m venv "${RUNNER_TEMP}/venv"
+          "${RUNNER_TEMP}/venv/bin/pip" install --quiet --require-virtualenv -r ci/requirements.txt
+
       - name: Install the Snyk CLI
         run: |
           set -euo pipefail
@@ -188,6 +195,21 @@ jobs:
             exit 1
           fi
           "${RUNNER_TEMP}/snyk" test --file=go.mod --severity-threshold=high
+
+      # Same gate for the CI tool pins; runs even when the module test fails.
+      - name: Fail on high or critical issues in the CI tool pins
+        if: ${{ !cancelled() }}
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+          SNYK_DISABLE_ANALYTICS: 1
+        run: |
+          set -euo pipefail
+          if [ -z "${SNYK_TOKEN}" ]; then
+            echo "::error::SNYK_TOKEN is not set for this run"
+            exit 1
+          fi
+          "${RUNNER_TEMP}/snyk" test --file=ci/requirements.txt --package-manager=pip \
+            --command="${RUNNER_TEMP}/venv/bin/python" --severity-threshold=high
 
   # Dependabot and fork pull requests receive no OpenID Connect token, so they
   # skip the analysis; main is analysed when their change merges.
