@@ -18,6 +18,9 @@ coverage.*
 *.coverprofile
 profile.cov
 
+# Profiles written by `go test -cpuprofile` and `-memprofile`
+*.prof
+
 # Dependency directories (remove the comment below to include it)
 # vendor/
 

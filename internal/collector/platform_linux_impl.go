@@ -1,8 +1,6 @@
 package collector
 
 import (
-	"bufio"
-	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -170,7 +168,7 @@ func (p *LinuxPlatform) Kstats(context.Context) (KstatSnapshot, error) {
 			if err != nil || strs["dataset_name"] == "" {
 				continue
 			}
-			pk.Datasets = append(pk.Datasets, DatasetKstats{Name: strs["dataset_name"], Stats: stats})
+			pk.Datasets = append(pk.Datasets, DatasetKstats{Name: strings.Clone(strs["dataset_name"]), Stats: stats})
 		}
 		if len(pk.IOStats) > 0 || len(pk.Datasets) > 0 {
 			snap.Pools = append(snap.Pools, pk)
@@ -187,16 +185,13 @@ const kstatTypeString = 7
 func parseProcKstat(data []byte) (map[string]float64, map[string]string, error) {
 	nums := map[string]float64{}
 	strs := map[string]string{}
-	sc := bufio.NewScanner(bytes.NewReader(data))
-	line := 0
-	seenHeader := false
-	for sc.Scan() {
-		line++
-		text := sc.Text()
-		if line == 1 {
+	first, seenHeader := true, false
+	for line := range lines(data) {
+		if first {
+			first = false
 			continue
 		}
-		f := strings.Fields(text)
+		f := strings.Fields(line)
 		if !seenHeader {
 			if len(f) == 3 && f[0] == "name" && f[1] == "type" && f[2] == "data" {
 				seenHeader = true

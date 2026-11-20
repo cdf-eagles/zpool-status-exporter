@@ -1,8 +1,6 @@
 package collector
 
 import (
-	"bufio"
-	"bytes"
 	"context"
 	"errors"
 	"fmt"
@@ -30,6 +28,10 @@ var (
 	vdevWriteBytes = gauge("vdev_write_bytes_per_second", "Bytes written per second over the last interval.", vdevLabels...)
 	vdevLatency    = gauge("vdev_latency_seconds",
 		"Average I/O wait over the last interval, by operation and queue.", append(slices.Clone(vdevLabels), "op", "queue")...)
+
+	// The rate metrics follow the operations and bandwidth columns.
+	poolRates = [...]*MetricDef{poolReadOps, poolWriteOps, poolReadBytes, poolWriteBytes}
+	vdevRates = [...]*MetricDef{vdevReadOps, vdevWriteOps, vdevReadBytes, vdevWriteBytes}
 )
 
 // latencyColumns maps zpool iostat -l columns (after the name, capacity,
@@ -42,7 +44,10 @@ var latencyColumns = []struct{ op, queue string }{
 	{"any", "scrub"}, {"any", "trim"}, {"any", "rebuild"},
 }
 
-const iostatFirstLatencyColumn = 7
+const (
+	iostatFirstRateColumn    = 3
+	iostatFirstLatencyColumn = 7
+)
 
 type iostatRow struct {
 	pool   string
@@ -62,9 +67,7 @@ var errUnknownRow = errors.New("zpool iostat: row not in the pool topology")
 func parseIostat(data []byte, topo topology) ([]iostatRow, error) {
 	var rows []iostatRow
 	current := ""
-	sc := bufio.NewScanner(bytes.NewReader(data))
-	for sc.Scan() {
-		line := sc.Text()
+	for line := range lines(data) {
 		if strings.TrimSpace(line) == "" {
 			continue
 		}
@@ -142,26 +145,27 @@ func (j *iostatJob) Collect(ctx context.Context) ([]prometheus.Metric, error) {
 		return nil, err
 	}
 	var b batch
+	b.grow(len(rows) * (len(poolRates) + len(latencyColumns)))
 	for _, r := range rows {
-		var labels []string
-		ops, bw := [2]*MetricDef{vdevReadOps, vdevWriteOps}, [2]*MetricDef{vdevReadBytes, vdevWriteBytes}
-		lat := vdevLatency
-		if r.isPool {
-			labels = []string{r.pool}
-			ops, bw = [2]*MetricDef{poolReadOps, poolWriteOps}, [2]*MetricDef{poolReadBytes, poolWriteBytes}
-			lat = poolLatency
-		} else {
+		rates, lat := poolRates, poolLatency
+		// The capacity leaves room for the op and queue labels of a latency.
+		labels := make([]string, 1, len(vdevLabels)+2)
+		labels[0] = r.pool
+		if !r.isPool {
 			info := topo[r.pool][r.name]
-			labels = []string{r.pool, r.name, info.VdevType, info.Class, info.Device, info.Disk}
+			rates, lat = vdevRates, vdevLatency
+			labels = append(labels, r.name, info.VdevType, info.Class, info.Device, info.Disk)
 		}
-		for i, d := range []*MetricDef{ops[0], ops[1], bw[0], bw[1]} {
-			if v, ok := iostatValue(r.values, 3+i); ok {
+		for i, d := range rates {
+			if v, ok := iostatValue(r.values, iostatFirstRateColumn+i); ok {
 				b.add(d, v, labels...)
 			}
 		}
+		latLabels := labels[:len(labels)+2]
 		for i, c := range latencyColumns {
 			if v, ok := iostatValue(r.values, iostatFirstLatencyColumn+i); ok {
-				b.add(lat, v/1e9, append(slices.Clone(labels), c.op, c.queue)...)
+				latLabels[len(labels)], latLabels[len(labels)+1] = c.op, c.queue
+				b.add(lat, v/1e9, latLabels...)
 			}
 		}
 	}
