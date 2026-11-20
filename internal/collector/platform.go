@@ -30,7 +30,8 @@ func (m DeviceMap) Resolve(vdevPath string) (device, disk string) {
 	return m.resolve(vdevPath)
 }
 
-// DiskBySerial returns the disk with the given serial number.
+// DiskBySerial returns the disk with the given serial number; when several
+// disks share it, the one whose name sorts first.
 func (m DeviceMap) DiskBySerial(serial string) (Disk, bool) {
 	if serial == "" {
 		return Disk{}, false

@@ -49,3 +49,9 @@ func parseFlex(s string) flexNum {
 	}
 	return flexNum{Value: v, Valid: true}
 }
+
+// div returns f divided by d, still invalid when f is.
+func (f flexNum) div(d float64) flexNum {
+	f.Value /= d
+	return f
+}
