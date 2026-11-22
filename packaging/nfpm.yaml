@@ -31,3 +31,6 @@ contents:
 scripts:
   postinstall: packaging/linux/postinstall.sh
   preremove: packaging/linux/preremove.sh
+rpm:
+  signature:
+    key_file: build/rpm-signing.asc

@@ -24,15 +24,29 @@ are tested against synthesized data only, not against a live host.
 
 ## Install
 
-Release packages are attached to each GitHub release:
-
-- FreeBSD: `pkg add zpool-status-exporter-<version>.pkg`, then
+- FreeBSD: download `zpool-status-exporter-<version>.pkg` from the GitHub
+  release, `pkg add zpool-status-exporter-<version>.pkg`, then
   `sysrc zpool_status_exporter_enable=YES` and
   `service zpool_status_exporter start`. Set extra flags with
   `sysrc zpool_status_exporter_args="..."`.
-- Linux: install the RPM (Red Hat Package Manager) package, edit
-  `/etc/sysconfig/zpool-status-exporter`, then
-  `systemctl enable --now zpool-status-exporter`.
+- Linux (x86_64) with dnf: Red Hat Enterprise Linux (RHEL) 9 or 10, its
+  rebuilds such as Rocky Linux and AlmaLinux, and Fedora install the RPM (Red
+  Hat Package Manager) package from the account's package repository,
+  [packages](https://github.com/cdf-eagles/packages), and `dnf upgrade`
+  then installs each new release:
+
+  ```sh
+  sudo curl -fsSLo /etc/yum.repos.d/packages.repo https://cdf-eagles.github.io/packages/packages.repo
+  sudo dnf install zpool-status-exporter
+  ```
+
+  dnf asks once to import the repository's signing key; check its
+  fingerprint against the one in the
+  [packages README](https://github.com/cdf-eagles/packages#keys) before
+  accepting. Edit `/etc/sysconfig/zpool-status-exporter`, then
+  `systemctl enable --now zpool-status-exporter`. The same signed package is
+  attached to each GitHub release; its public key is
+  `packaging/packages-signing.asc`.
 
 The exporter listens on port 10058 and serves metrics at `/metrics` and a
 health check at `/healthz`. See `zpool-status-exporter --help` or the
@@ -275,10 +289,22 @@ Work is squash merged into `main` through pull requests from `fix/`,
    with the GitHub CLI, `gh`).
 2. A signed release candidate tag `vX.Y.Z-rc.N` on a `main` commit builds the
    binaries and the FreeBSD and RPM packages and publishes a pre-release.
+   The RPM package is signed with the package repository's OpenPGP key (the
+   `PACKAGES_SIGNING_KEY` secret, which must match
+   `packaging/packages-signing.asc`), and the workflow checks its signature,
+   installs it, and removes it on AlmaLinux 9 and 10 before publishing.
 3. After the release candidate is proven, the same commit is tagged
    `vX.Y.Z`. The release workflow publishes the release candidate's own
    files, checked against their checksums, with build provenance
    attestations.
+4. The final release then opens a pull request on
+   [packages](https://github.com/cdf-eagles/packages) that adds the RPM
+   package, its SHA-256 checksum, and the release candidate tag to
+   `sources/zpool-status-exporter.txt`
+   (`scripts/update-package-repository.sh`). It signs in as a GitHub App
+   installed only on that repository (the `PACKAGES_APP_CLIENT_ID` variable
+   and the `PACKAGES_APP_PRIVATE_KEY` secret). Once the pull request is
+   merged by hand, dnf offers the release as an upgrade.
 
 `build/`, `dependabot/`, and `ignore/` pull requests do not bump the version
 and ship with the next release.
