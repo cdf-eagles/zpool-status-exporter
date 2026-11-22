@@ -40,3 +40,23 @@ updates:
     groups:
       pre-commit-hooks:
         patterns: ["*"]
+
+  - package-ecosystem: docker
+    directory: /packaging/test/almalinux10
+    schedule:
+      interval: weekly
+    groups:
+      almalinux10-image:
+        patterns: ["*"]
+
+  # The AlmaLinux 9 image takes minor updates only.
+  - package-ecosystem: docker
+    directory: /packaging/test/almalinux9
+    schedule:
+      interval: weekly
+    ignore:
+      - dependency-name: almalinux
+        update-types: ["version-update:semver-major"]
+    groups:
+      almalinux9-image:
+        patterns: ["*"]

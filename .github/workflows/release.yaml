@@ -103,10 +103,51 @@ jobs:
           done
           gzip -9nc docs/zpool-status-exporter.8 > dist/zpool-status-exporter.8.gz
 
+      - name: Write the RPM signing key
+        env:
+          PACKAGES_SIGNING_KEY: ${{ secrets.PACKAGES_SIGNING_KEY }}
+        run: |
+          set -euo pipefail
+          umask 077
+          mkdir -p build
+          GNUPGHOME="${RUNNER_TEMP}/gnupg"
+          export GNUPGHOME
+          mkdir -m 0700 "${GNUPGHOME}"
+          committed=packaging/packages-signing.asc
+          if [ -z "${PACKAGES_SIGNING_KEY}" ]; then
+            echo "::error::PACKAGES_SIGNING_KEY is not set"; exit 1
+          fi
+          printf '%s\n' "${PACKAGES_SIGNING_KEY}" > build/rpm-signing.asc
+          want=$(gpg --show-keys --with-colons "${committed}" | awk -F: '/^fpr/ { print $10; exit }')
+          got=$(gpg --show-keys --with-colons build/rpm-signing.asc | awk -F: '/^fpr/ { print $10; exit }')
+          if [ -z "${got}" ] || [ "${got}" != "${want}" ]; then
+            echo "::error::PACKAGES_SIGNING_KEY does not match ${committed}"; exit 1
+          fi
+          rm -rf "${GNUPGHOME}"
+
       - name: Build the RPM package
         env:
           VERSION: ${{ needs.verify.outputs.version }}
         run: go run "github.com/goreleaser/nfpm/v2/cmd/nfpm@${NFPM_VERSION}" pkg --packager rpm --config packaging/nfpm.yaml --target dist/
+
+      - name: Remove the signing key
+        if: always()
+        run: rm -f build/rpm-signing.asc
+
+      - name: Check, install, and remove the RPM package on AlmaLinux 9 and 10
+        env:
+          VERSION: ${{ needs.verify.outputs.version }}
+        run: |
+          set -eu
+          rpm="dist/${PROJECT}-${VERSION}-1.x86_64.rpm"
+          for distribution in almalinux9 almalinux10; do
+            echo "== ${distribution}"
+            docker build --no-cache --progress plain \
+              --build-arg VERSION="${VERSION}" \
+              --build-arg RPM="${rpm}" \
+              --build-arg RPM_PUBKEY=packaging/packages-signing.asc \
+              --file "packaging/test/${distribution}/Dockerfile" .
+          done
 
       - name: Upload
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9  # v7.0.2
@@ -224,3 +265,43 @@ jobs:
           TAG: ${{ github.ref_name }}
           RC_TAG: ${{ needs.verify.outputs.rc_tag }}
         run: gh release create "$TAG" dist/* --verify-tag --latest --title "$TAG" --notes "Promoted from ${RC_TAG} without rebuilding. See CHANGELOG.md."
+
+  package-repository:
+    name: Open the package repository pull request
+    needs: [verify, publish-final]
+    if: needs.verify.outputs.kind == 'final'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - name: Check out code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Download the release checksums
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+        run: gh release download "$TAG" --pattern SHA256SUMS --dir "${RUNNER_TEMP}"
+
+      # The token reaches only the package repository, with contents and pull
+      # requests write.
+      - name: Create a token for the package repository
+        id: packages-token
+        uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510  # v3.3.0
+        with:
+          client-id: ${{ vars.PACKAGES_APP_CLIENT_ID }}
+          private-key: ${{ secrets.PACKAGES_APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+          repositories: packages
+          permission-contents: write
+          permission-pull-requests: write
+
+      - name: Open the pull request on the package repository
+        env:
+          GH_TOKEN: ${{ steps.packages-token.outputs.token }}
+          TAG: ${{ github.ref_name }}
+          RC_TAG: ${{ needs.verify.outputs.rc_tag }}
+        run: sh scripts/update-package-repository.sh pr "$TAG" "$RC_TAG" "${RUNNER_TEMP}/SHA256SUMS"

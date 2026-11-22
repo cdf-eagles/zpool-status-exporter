@@ -56,8 +56,9 @@ repository and are not repeated here.
 - The exporter runs as root (smartctl needs raw disk access).
 - Packaging: `packaging/freebsd` (rc.d script, manifest, `build-pkg.sh`),
   `packaging/linux` (systemd unit, sysconfig, scriptlets), and
-  `packaging/nfpm.yaml` (RPM). Keep the manual page in `docs/` in step with
-  the flags.
+  `packaging/nfpm.yaml` (RPM, signed with the package repository's OpenPGP
+  key; `packaging/test/` checks it on AlmaLinux 9 and 10). Keep the manual
+  page in `docs/` in step with the flags.
 
 ## Branches and releases
 
