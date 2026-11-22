@@ -1,4 +1,4 @@
-FROM almalinux:9.7
+FROM almalinux:9.9
 ARG VERSION
 ARG RPM
 ARG RPM_PUBKEY
