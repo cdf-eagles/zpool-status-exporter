@@ -27,30 +27,32 @@ usage() {
 
 # check_tags TAG RC_TAG: a final tag vX.Y.Z and a release candidate of it.
 check_tags() {
-	case "$1" in
+	ct_tag=$1
+	ct_rc=$2
+	case "${ct_tag}" in
 	v[0-9]*.[0-9]*.[0-9]*) ;;
 	*)
-		echo "unsupported tag $1" >&2
+		echo "unsupported tag ${ct_tag}" >&2
 		exit 2
 		;;
 	esac
-	case "$1" in
+	case "${ct_tag}" in
 	*[!v0-9.]*)
-		echo "unsupported tag $1" >&2
+		echo "unsupported tag ${ct_tag}" >&2
 		exit 2
 		;;
 	*) ;;
 	esac
-	case "$2" in
-	"$1"-rc.[0-9]*) ;;
+	case "${ct_rc}" in
+	"${ct_tag}"-rc.[0-9]*) ;;
 	*)
-		echo "unsupported release candidate tag $2 for $1" >&2
+		echo "unsupported release candidate tag ${ct_rc} for ${ct_tag}" >&2
 		exit 2
 		;;
 	esac
-	case "${2#"$1"-rc.}" in
+	case "${ct_rc#"${ct_tag}"-rc.}" in
 	*[!0-9]*)
-		echo "unsupported release candidate tag $2 for $1" >&2
+		echo "unsupported release candidate tag ${ct_rc} for ${ct_tag}" >&2
 		exit 2
 		;;
 	*) ;;
