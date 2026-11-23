@@ -46,7 +46,9 @@ repository and are not repeated here.
   golangci-lint must be built with the Go version in `go.mod`.
 - CI tool versions live in `ci/requirements.txt`, `.pre-commit-config.yaml`,
   and `ci/tools/go.mod`, where Dependabot updates them; never pin one in a
-  workflow `env:` block unless it is a release download verified by checksum.
+  workflow `env:` block unless it is a release download verified by checksum
+  or `PYTHON_VERSION`, the full patch release of Python that
+  `actions/setup-python` installs in every job that runs Python.
 
 ## Scripts and packaging
 

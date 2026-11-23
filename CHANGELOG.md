@@ -3,6 +3,7 @@
 - 2026-11-22
   - dnf installs the exporter from the account's package repository (https://cdf-eagles.github.io/packages/) and offers each new release as an upgrade. A final release opens a pull request on cdf-eagles/packages that lists its RPM (Red Hat Package Manager) package (`scripts/update-package-repository.sh`), signed in as a GitHub App installed only on that repository. Found internally from backlog item 632.
   - The release signs the RPM package with the package repository's OpenPGP key (`PACKAGES_SIGNING_KEY`, public key `packaging/packages-signing.asc`) and checks its signature, installation, and removal on AlmaLinux 9 and 10 before publishing the release candidate.
+  - Continuous integration (CI) installs Python 3.13.18 with `actions/setup-python` (`PYTHON_VERSION` in the workflow's `env:` block) in every job that runs Python, instead of using the runner image's own `python3`, whose version changed with the image. The weekly Tool drift job checks the pin against its line's latest patch release. Found internally from backlog item 536.
 - 2026-11-18
   - The Snyk job also tests the Python tools pinned in `ci/requirements.txt`, which Snyk's repository import skips, and fails on any high or critical issue there. Found internally from backlog item 572.
 - 2026-11-17

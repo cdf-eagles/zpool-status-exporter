@@ -23,6 +23,7 @@ env:
   GITLEAKS_SHA256: 551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb
   SNYK_VERSION: 1.1308.4
   SNYK_SHA256: 979172ee128903f50e43fff221f22a0689579f22c086dabaa0d1a5416485b9ba
+  PYTHON_VERSION: "3.13.18"
 
 jobs:
   lint:
@@ -61,6 +62,11 @@ jobs:
         env:
           GOOS: freebsd
         run: golangci-lint run ./...
+
+      # yamllint disable-line rule:line-length
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0  # v7.1.0
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
 
       - name: Install the Python tools
         run: |
@@ -176,6 +182,11 @@ jobs:
         with:
           go-version-file: go.mod
 
+      # yamllint disable-line rule:line-length
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0  # v7.1.0
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
       # The Snyk CLI reads the CI tools' dependency tree from the installed packages.
       - name: Install the Python tools
         run: |
@@ -250,6 +261,11 @@ jobs:
         uses: actions/setup-go@d8cbb8045d7f43706b9177cceb36c1f91a6644d5  # v7.1.0
         with:
           go-version-file: go.mod
+
+      # yamllint disable-line rule:line-length
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0  # v7.1.0
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
 
       - name: Install the Python tools
         run: |
