@@ -1,5 +1,7 @@
 # Changelog
 
+- 2026-11-23
+  - Continuous integration (CI) retries each pinned tool download (`--retry 8 --retry-delay 30 --retry-max-time 300 --retry-all-errors`) for up to about five minutes, so a passing error from GitHub's release download service, such as the 504 replies of 2026-11-08, no longer fails the job before its checks run; the SHA-256 check after each download is unchanged. Found internally from backlog item 516.
 - 2026-11-22
   - dnf installs the exporter from the account's package repository (https://cdf-eagles.github.io/packages/) and offers each new release as an upgrade. A final release opens a pull request on cdf-eagles/packages that lists its RPM (Red Hat Package Manager) package (`scripts/update-package-repository.sh`), signed in as a GitHub App installed only on that repository. Found internally from backlog item 632.
   - The release signs the RPM package with the package repository's OpenPGP key (`PACKAGES_SIGNING_KEY`, public key `packaging/packages-signing.asc`) and checks its signature, installation, and removal on AlmaLinux 9 and 10 before publishing the release candidate.
